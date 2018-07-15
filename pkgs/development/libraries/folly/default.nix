@@ -25,13 +25,29 @@ stdenv.mkDerivation rec {
     openssl
   ];
 
-  patches = [ ./disable-tests-x86_64-linux.patch ];
+  patches = [
+    # Fix incorrect forward_tuple test
+    (fetchpatch {
+      sha256 = "0kz8v965h6xfb0f7jrnvks2x6i5q0kfj4p5hzp41jyhhxhb6hhxc";
+      url = https://github.com/facebook/folly/commit/c60619007b356bb03784539dc1a347c9d4713b7e.patch;
+    })
+    # Fix Conv.stdChronoToTimespec test on macOS
+    (fetchpatch {
+      sha256 = "19bb2la0cbwvzrwsnzxqkknnzy1gym9kinx0aqyjdwfx9aialddh";
+      url = https://github.com/facebook/folly/commit/acd6334f8e82d0aa754523a87f29b675082a7935.patch;
+    })
+  ] ++ stdenv.lib.optionals stdenv.isDarwin [
+    ./disable-tests-x86_64-darwin.patch
+    ./macos-10.11.patch
+  ] ++ stdenv.lib.optionals stdenv.isLinux [
+    ./disable-tests-x86_64-linux.patch
+  ];
 
   cmakeFlags = [
     "-DBUILD_TESTS:BOOL=ON"
     "-DUSE_CMAKE_GOOGLE_TEST_INTEGRATION:BOOL=ON"
   ];
-  CXXFLAGS = [
+  CXXFLAGS = stdenv.lib.optionals stdenv.cc.isGNU [
     "-Wno-error=maybe-uninitialized"
     "-Wno-error=stringop-overflow"
   ];
@@ -47,7 +63,7 @@ stdenv.mkDerivation rec {
     homepage = https://github.com/facebook/folly;
     license = licenses.asl20;
     # 32bit is not supported: https://github.com/facebook/folly/issues/103
-    platforms = [ "x86_64-linux" ];
+    platforms = [ "x86_64-darwin" "x86_64-linux" ];
     maintainers = with maintainers; [ abbradar ];
   };
 }
