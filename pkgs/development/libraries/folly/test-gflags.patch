@@ -1,0 +1,174 @@
+commit 3e23fe15604a9d5910089d703618f4c28e967118
+Author:     Matthew Glazar <strager.nds@gmail.com>
+AuthorDate: Mon Mar 11 00:23:39 2019 -0700
+Commit:     Facebook Github Bot <facebook-github-bot@users.noreply.github.com>
+CommitDate: Mon Mar 11 00:26:31 2019 -0700
+
+    Add missing gflags #include in tests (#1051)
+
+    Summary:
+    Some tests fail to compile because gflags.h is not included:
+
+        .../folly/test/FormatOtherTest.cpp: In function 'int main(int, char**)':
+        .../folly/test/FormatOtherTest.cpp:113:3: error: 'gflags' has not been declared
+           gflags::ParseCommandLineFlags(&argc, &argv, true);
+           ^~~~~~
+
+    The tests compile without issue on Travis CI without this patch, but I
+    don't see how that's possible.
+
+    Include gflags.h explicitly to fix the compilation of these tests.
+    Pull Request resolved: https://github.com/facebook/folly/pull/1051
+
+    Reviewed By: aary
+
+    Differential Revision: D14400709
+
+    Pulled By: yfeldblum
+
+    fbshipit-source-id: 73999a940f45511373d3922ea8eb782a27af0008
+
+diff --git folly/concurrency/test/ConcurrentHashMapTest.cpp folly/concurrency/test/ConcurrentHashMapTest.cpp
+index c8585293..cad8494f 100644
+--- a/folly/concurrency/test/ConcurrentHashMapTest.cpp
++++ b/folly/concurrency/test/ConcurrentHashMapTest.cpp
+@@ -21,6 +21,7 @@
+ #include <thread>
+
+ #include <folly/hash/Hash.h>
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+ #include <folly/test/DeterministicSchedule.h>
+
+diff --git folly/concurrency/test/DynamicBoundedQueueTest.cpp folly/concurrency/test/DynamicBoundedQueueTest.cpp
+index a4421011..4f25bb62 100644
+--- a/folly/concurrency/test/DynamicBoundedQueueTest.cpp
++++ b/folly/concurrency/test/DynamicBoundedQueueTest.cpp
+@@ -17,6 +17,7 @@
+ #include <folly/concurrency/DynamicBoundedQueue.h>
+ #include <folly/MPMCQueue.h>
+ #include <folly/ProducerConsumerQueue.h>
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+
+ #include <glog/logging.h>
+diff --git folly/concurrency/test/UnboundedQueueTest.cpp folly/concurrency/test/UnboundedQueueTest.cpp
+index 62fdf824..2658fd26 100644
+--- a/folly/concurrency/test/UnboundedQueueTest.cpp
++++ b/folly/concurrency/test/UnboundedQueueTest.cpp
+@@ -17,6 +17,7 @@
+ #include <folly/concurrency/UnboundedQueue.h>
+ #include <folly/MPMCQueue.h>
+ #include <folly/ProducerConsumerQueue.h>
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+
+ #include <boost/thread/barrier.hpp>
+diff --git folly/experimental/test/BitsTest.cpp folly/experimental/test/BitsTest.cpp
+index df612dfa..b47e33b9 100644
+--- a/folly/experimental/test/BitsTest.cpp
++++ b/folly/experimental/test/BitsTest.cpp
+@@ -20,6 +20,7 @@
+
+ #include <glog/logging.h>
+
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+
+ using namespace folly;
+diff --git folly/gen/test/CombineTest.cpp folly/gen/test/CombineTest.cpp
+index c9066ffb..e00ad082 100644
+--- a/folly/gen/test/CombineTest.cpp
++++ b/folly/gen/test/CombineTest.cpp
+@@ -21,6 +21,7 @@
+ #include <folly/Range.h>
+ #include <folly/gen/Base.h>
+ #include <folly/gen/Combine.h>
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+
+ using namespace folly::gen;
+diff --git folly/gen/test/ParallelMapTest.cpp folly/gen/test/ParallelMapTest.cpp
+index a6b10852..b10fc611 100644
+--- a/folly/gen/test/ParallelMapTest.cpp
++++ b/folly/gen/test/ParallelMapTest.cpp
+@@ -21,6 +21,7 @@
+ #include <folly/Memory.h>
+ #include <folly/gen/Base.h>
+ #include <folly/gen/ParallelMap.h>
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+
+ using namespace folly;
+diff --git folly/gen/test/ParallelTest.cpp folly/gen/test/ParallelTest.cpp
+index abb17a56..0f7d879b 100644
+--- a/folly/gen/test/ParallelTest.cpp
++++ b/folly/gen/test/ParallelTest.cpp
+@@ -23,6 +23,7 @@
+
+ #include <folly/gen/Base.h>
+ #include <folly/gen/Parallel.h>
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+
+ using namespace folly;
+diff --git folly/memory/test/ArenaTest.cpp folly/memory/test/ArenaTest.cpp
+index 74891a10..4ea68bc9 100644
+--- a/folly/memory/test/ArenaTest.cpp
++++ b/folly/memory/test/ArenaTest.cpp
+@@ -16,6 +16,7 @@
+
+ #include <folly/memory/Arena.h>
+ #include <folly/Memory.h>
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+
+ #include <set>
+diff --git folly/synchronization/test/SmallLocksTest.cpp folly/synchronization/test/SmallLocksTest.cpp
+index a5df8705..af1d90f9 100644
+--- a/folly/synchronization/test/SmallLocksTest.cpp
++++ b/folly/synchronization/test/SmallLocksTest.cpp
+@@ -28,6 +28,7 @@
+
+ #include <folly/Random.h>
+ #include <folly/portability/Asm.h>
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+ #include <folly/portability/PThread.h>
+ #include <folly/portability/Unistd.h>
+diff --git folly/test/AtomicBitSetTest.cpp folly/test/AtomicBitSetTest.cpp
+index ccb78761..ef5e1fc1 100644
+--- a/folly/test/AtomicBitSetTest.cpp
++++ b/folly/test/AtomicBitSetTest.cpp
+@@ -16,6 +16,7 @@
+
+ #include <folly/AtomicBitSet.h>
+
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+
+ #include <glog/logging.h>
+diff --git folly/test/FormatOtherTest.cpp folly/test/FormatOtherTest.cpp
+index f2aed895..d134d552 100644
+--- a/folly/test/FormatOtherTest.cpp
++++ b/folly/test/FormatOtherTest.cpp
+@@ -23,6 +23,7 @@
+ #include <folly/Portability.h>
+ #include <folly/dynamic.h>
+ #include <folly/json.h>
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+ #include <folly/small_vector.h>
+
+diff --git folly/test/MPMCPipelineTest.cpp folly/test/MPMCPipelineTest.cpp
+index b294962d..c769e564 100644
+--- a/folly/test/MPMCPipelineTest.cpp
++++ b/folly/test/MPMCPipelineTest.cpp
+@@ -22,6 +22,7 @@
+ #include <glog/logging.h>
+
+ #include <folly/Conv.h>
++#include <folly/portability/GFlags.h>
+ #include <folly/portability/GTest.h>
+
+ namespace folly {
