@@ -25,23 +25,25 @@ stdenv.mkDerivation rec {
     openssl
   ];
 
-  patches = [ ./cxxflags.patch ./test-gflags.patch ./disable-tests-x86_64-linux.patch ];
+  patches = [ ./cxxflags.patch ]
+    ++ stdenv.lib.optionals doCheck [ ./test-gflags.patch ./disable-tests-x86_64-linux.patch ]
+    ++ stdenv.lib.optionals stdenv.isDarwin [ ./macos-10.11.patch ];
 
-  cmakeFlags = [ "-DBUILD_TESTS:BOOL=ON" "-DUSE_CMAKE_GOOGLE_TEST_INTEGRATION:BOOL=ON" ];
-  CXXFLAGS = [ "-Wno-error=stringop-overflow" "-Wno-error=maybe-uninitialized" ];
+  cmakeFlags = stdenv.lib.optionals doCheck [ "-DBUILD_TESTS:BOOL=ON" "-DUSE_CMAKE_GOOGLE_TEST_INTEGRATION:BOOL=ON" ];
+  CXXFLAGS = stdenv.lib.optionals stdenv.cc.isGNU [ "-Wno-error=maybe-uninitialized" "-Wno-error=stringop-overflow" ];
 
   enableParallelBuilding = true;
 
   checkInputs = [ gtest ];
   checkTarget = "test";
-  doCheck = true;
+  doCheck = !stdenv.isDarwin;
 
   meta = with stdenv.lib; {
     description = "An open-source C++ library developed and used at Facebook";
     homepage = https://github.com/facebook/folly;
     license = licenses.asl20;
     # 32bit is not supported: https://github.com/facebook/folly/issues/103
-    platforms = [ "x86_64-linux" ];
+    platforms = [ "x86_64-darwin" "x86_64-linux" ];
     maintainers = with maintainers; [ abbradar ];
   };
 }
