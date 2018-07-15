@@ -76,14 +76,13 @@ let
     if blas64_ != null
       then blas64_
       else hasPrefix "x86_64" stdenv.system;
-
-  version = "0.2.20";
 in
-stdenv.mkDerivation {
+stdenv.mkDerivation rec {
   name = "openblas-${version}";
+  version = "0.3.1";
   src = fetchurl {
     url = "https://github.com/xianyi/OpenBLAS/archive/v${version}.tar.gz";
-    sha256 = "157kpkbpwlr57dkmqiwr3qp9fglfidagv7l6fibrhln6v4aqpwsy";
+    sha256 = "0czbs2afmcxxij1ivqrm04p0qcksg5fravjifhydvb7k6mpraphz";
     name = "openblas-${version}.tar.gz";
   };
 
@@ -118,12 +117,7 @@ stdenv.mkDerivation {
     ] ++ stdenv.lib.optional (stdenv.hostPlatform.libc == "musl") "NO_AFFINITY=1"
     ++ mapAttrsToList (var: val: var + "=" + val) config;
 
-  patches = stdenv.lib.optional (stdenv.hostPlatform.libc != "glibc")
-    # https://github.com/xianyi/OpenBLAS/pull/1247
-    (fetchpatch {
-      url = "https://github.com/xianyi/OpenBLAS/commit/88a35ff457f55e527e0e8a503a0dc61976c1846d.patch";
-      sha256 = "1a3qrhvl5hp06c53fjqghq4zgf6ls7narm06l0shcvs57hznh09n";
-    });
+  patches = []; # TODO: Remove on next mass-rebuild
 
   doCheck = true;
   checkTarget = "tests";

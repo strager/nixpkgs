@@ -1,17 +1,19 @@
 { stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  version = "8.9";
+  version = "8.11";
   name = "checkstyle-${version}";
 
   src = fetchurl {
-    url = "mirror://sourceforge/checkstyle/${name}-bin.tar.gz";
-    sha256 = "058lffmlzw7nqz5z89m2k640q7ffz6dz008bddvjsgpxbrdb89cd";
+    url = "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${version}/checkstyle-${version}-all.jar";
+    sha256 = "13x4m4rn7rix64baclcm2jqbizkj38njif2ba0ycmvyjm62smfwv";
   };
+
+  phases = [ "installPhase" ];
 
   installPhase = ''
     mkdir -p $out/checkstyle
-    cp -R * $out/checkstyle
+    cp $src $out/checkstyle/checkstyle-all.jar
   '';
 
   meta = with stdenv.lib; {

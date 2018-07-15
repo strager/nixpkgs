@@ -2,7 +2,6 @@
 
 appleDerivation {
   # We can't just run the root build, because https://github.com/facebook/xcbuild/issues/264
-  dontUseXcbuild = true;
 
   # pkill requires special private headers that are unavailable in
   # NixPkgs. These ones are needed:
@@ -27,7 +26,7 @@ appleDerivation {
                 | grep -v -e Desktop -e Embedded -e mklocale -e colldef)
 
     for i in $targets; do
-      xcodebuild -target $i
+      xcodebuild SYMROOT=$PWD/Products OBJROOT=$PWD/Intermediates -target $i
     done
   '';
 
@@ -49,7 +48,8 @@ appleDerivation {
     # ln -s $out/share/man/man1/pkill.1 $out/share/man/man1/pgrep.1
   '';
 
-  buildInputs = [ xcbuild ncurses libutil-new ];
+  nativeBuildInputs = [ xcbuild ];
+  buildInputs = [ ncurses libutil-new ];
 
   meta = {
     platforms = stdenv.lib.platforms.darwin;

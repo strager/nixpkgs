@@ -5,7 +5,7 @@ stdenv.mkDerivation rec {
   name = "telepathy-gabble-0.18.4";
 
   src = fetchurl {
-    url = "http://telepathy.freedesktop.org/releases/telepathy-gabble/${name}.tar.gz";
+    url = "https://telepathy.freedesktop.org/releases/telepathy-gabble/${name}.tar.gz";
     sha256 = "174nlkqm055vrhv11gy73m20jbsggcb0ddi51c7s9m3j5ibr2p0i";
   };
 
@@ -22,6 +22,6 @@ stdenv.mkDerivation rec {
     homepage = https://telepathy.freedesktop.org/components/telepathy-gabble/;
     description = "Jabber/XMPP connection manager for the Telepathy framework";
     license = licenses.lgpl21Plus;
-    platforms = stdenv.lib.platforms.gnu;
+    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux;
   };
 }

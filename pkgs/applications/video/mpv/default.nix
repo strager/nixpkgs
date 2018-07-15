@@ -1,5 +1,5 @@
 { stdenv, fetchurl, fetchFromGitHub, fetchpatch, makeWrapper
-, docutils, perl, pkgconfig, python3, which, ffmpeg
+, docutils, perl, pkgconfig, python3, which, ffmpeg_4
 , freefont_ttf, freetype, libass, libpthreadstubs
 , lua, luasocket, libuchardet, libiconv ? null, darwin
 
@@ -7,11 +7,13 @@
     libGLU_combined       ? null,
     libX11     ? null,
     libXext    ? null,
-    libXxf86vm ? null
+    libXxf86vm ? null,
+    libXrandr  ? null
 
-, waylandSupport ? false,
-    wayland      ? null,
-    libxkbcommon ? null
+, waylandSupport ? false
+  , wayland           ? null
+  , wayland-protocols ? null
+  , libxkbcommon      ? null
 
 , rubberbandSupport  ? true,  rubberband    ? null
 , xineramaSupport    ? true,  libXinerama   ? null
@@ -46,8 +48,8 @@ with stdenv.lib;
 let
   available = x: x != null;
 in
-assert x11Support         -> all available [libGLU_combined libX11 libXext libXxf86vm];
-assert waylandSupport     -> all available [wayland libxkbcommon];
+assert x11Support         -> all available [libGLU_combined libX11 libXext libXxf86vm libXrandr];
+assert waylandSupport     -> all available [wayland wayland-protocols libxkbcommon];
 assert rubberbandSupport  -> available rubberband;
 assert xineramaSupport    -> x11Support && available libXinerama;
 assert xvSupport          -> x11Support && available libXv;
@@ -77,27 +79,20 @@ let
   # for purity reasons this behavior should be avoided.
   wafVersion = "1.9.15";
   waf = fetchurl {
-    urls = [ "http://waf.io/waf-${wafVersion}"
+    urls = [ "https://waf.io/waf-${wafVersion}"
              "http://www.freehackers.org/~tnagy/release/waf-${wafVersion}" ];
     sha256 = "0qrnlv91cb0v221w8a0fi4wxm99q2hpz10rkyyk4akcsvww6xrw5";
   };
 in stdenv.mkDerivation rec {
   name = "mpv-${version}";
-  version = "0.27.2";
+  version = "0.28.2";
 
   src = fetchFromGitHub {
     owner = "mpv-player";
     repo  = "mpv";
     rev    = "v${version}";
-    sha256 = "1ivyyqajkxq5c1zxp0dm7pljvianhgvwl3dbghgpzyrch59k5wnr";
+    sha256 = "0bldxhqjz7z9fgvx4k40l49awpay17fscp8ypswb459yicy8npmg";
   };
-
-  patches = [
-    (fetchpatch {
-      url = "https://github.com/mpv-player/mpv/commit/2ecf240b1cd20875991a5b18efafbe799864ff7f.patch";
-      sha256 = "1sr0770rvhsgz8d7ysr9qqp4g9gwdhgj8g3rgnz90wl49lgrykhb";
-    })
-  ];
 
   postPatch = ''
     patchShebangs ./TOOLS/
@@ -131,7 +126,7 @@ in stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    ffmpeg freetype libass libpthreadstubs
+    ffmpeg_4 freetype libass libpthreadstubs
     lua luasocket libuchardet
   ] ++ optional alsaSupport        alsaLib
     ++ optional xvSupport          libXv
@@ -157,8 +152,8 @@ in stdenv.mkDerivation rec {
     ++ optional vapoursynthSupport vapoursynth
     ++ optional archiveSupport     libarchive
     ++ optionals dvdnavSupport     [ libdvdnav libdvdnav.libdvdread ]
-    ++ optionals x11Support        [ libX11 libXext libGLU_combined libXxf86vm ]
-    ++ optionals waylandSupport    [ wayland libxkbcommon ]
+    ++ optionals x11Support        [ libX11 libXext libGLU_combined libXxf86vm libXrandr ]
+    ++ optionals waylandSupport    [ wayland wayland-protocols libxkbcommon ]
     ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
       libiconv Cocoa CoreAudio
     ]);
@@ -200,7 +195,7 @@ in stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "A media player that supports many video formats (MPlayer and mplayer2 fork)";
-    homepage = http://mpv.io;
+    homepage = https://mpv.io;
     license = licenses.gpl2Plus;
     maintainers = with maintainers; [ AndersonTorres fuuzetsu fpletz ];
     platforms = platforms.darwin ++ platforms.linux;

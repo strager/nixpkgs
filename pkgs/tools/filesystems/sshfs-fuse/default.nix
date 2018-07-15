@@ -5,14 +5,14 @@
 let
   inherit (stdenv.lib) optional;
 in stdenv.mkDerivation rec {
-  version = "3.3.1";
+  version = "3.4.0";
   name = "sshfs-fuse-${version}";
 
   src = fetchFromGitHub {
     owner = "libfuse";
     repo = "sshfs";
     rev = "sshfs-${version}";
-    sha256 = "15z1mlad09llckkadvjfzmbv14fbq218xmb4axkmi7kzixbi41hv";
+    sha256 = "1mbhjgw6797bln579pfwmn79gs8isnv57z431lbfw7j8xkh75awl";
   };
 
   nativeBuildInputs = [ meson pkgconfig ninja docutils ];

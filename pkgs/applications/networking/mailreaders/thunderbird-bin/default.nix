@@ -43,8 +43,6 @@
 , gnupg
 }:
 
-assert stdenv.isLinux;
-
 # imports `version` and `sources`
 with (import ./release_sources.nix);
 
@@ -72,7 +70,7 @@ stdenv.mkDerivation {
   inherit name;
 
   src = fetchurl {
-    url = "http://download-installer.cdn.mozilla.net/pub/thunderbird/releases/${version}/${source.arch}/${source.locale}/thunderbird-${version}.tar.bz2";
+    url = "https://download-installer.cdn.mozilla.net/pub/thunderbird/releases/${version}/${source.arch}/${source.locale}/thunderbird-${version}.tar.bz2";
     inherit (source) sha512;
   };
 

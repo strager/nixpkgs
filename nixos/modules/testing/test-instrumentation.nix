@@ -58,6 +58,9 @@ in
     systemd.services."serial-getty@${qemuSerialDevice}".enable = false;
     systemd.services."serial-getty@hvc0".enable = false;
 
+    # Only use a serial console, no TTY.
+    virtualisation.qemu.consoles = [ qemuSerialDevice ];
+
     boot.initrd.preDeviceCommands =
       ''
         echo 600 > /proc/sys/kernel/hung_task_timeout_secs
@@ -123,9 +126,12 @@ in
     networking.usePredictableInterfaceNames = false;
 
     # Make it easy to log in as root when running the test interactively.
-    users.extraUsers.root.initialHashedPassword = mkOverride 150 "";
+    users.users.root.initialHashedPassword = mkOverride 150 "";
 
     services.xserver.displayManager.job.logToJournal = true;
+
+    # set default stateVersion to avoid warnings during eval
+    system.nixos.stateVersion = mkDefault "18.03";
   };
 
 }

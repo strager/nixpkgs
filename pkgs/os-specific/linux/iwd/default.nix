@@ -3,16 +3,17 @@
 let
   ell = fetchgit {
      url = https://git.kernel.org/pub/scm/libs/ell/ell.git;
-     rev = "8192131685be0f27d6f51b14b78ef93fa7f3c692";
-     sha256 = "1k74qz3w0l4zq8llrxc4p62xy0c0n33f260vy3d14wx5rhvf0544";
+     rev = "0.6";
+     sha256 = "0cs0a7rjg9gl9gn9sc3b1y8mv2zbjg7rb87mla6kcrknjci76pgm";
   };
 in stdenv.mkDerivation rec {
-  name = "iwd-unstable-2017-12-14";
+  name = "iwd-${version}";
+  version = "0.3";
 
   src = fetchgit {
     url = https://git.kernel.org/pub/scm/network/wireless/iwd.git;
-    rev = "cf3372235c4592ca7366b27548abc4e89a982414";
-    sha256 = "0dg28j919w1v8sqr6jdj12c233rsjzd2jzkcpag1hx2h3g35hnlz";
+    rev = version;
+    sha256 = "151bqc85vchl1arhl9pyvfashxq886cjrbi6js4csx4vzscbhzzm";
   };
 
   nativeBuildInputs = [
@@ -24,7 +25,7 @@ in stdenv.mkDerivation rec {
     readline
     python3Packages.python
   ];
-  
+
   pythonPath = [
     python3Packages.dbus-python
     python3Packages.pygobject3
@@ -33,7 +34,9 @@ in stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   configureFlags = [
-    "--with-dbusconfdir=$(out)/etc/"
+    "--with-dbus-datadir=$(out)/etc/"
+    "--localstatedir=/var"
+    "--disable-systemd-service"
   ];
 
   postUnpack = ''

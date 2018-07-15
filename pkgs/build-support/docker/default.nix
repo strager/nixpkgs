@@ -32,7 +32,36 @@ rec {
     inherit pkgs buildImage pullImage shadowSetup buildImageWithNixDb;
   };
 
-  pullImage = callPackage ./pull.nix {};
+  pullImage = let
+    fixName = name: builtins.replaceStrings ["/" ":"] ["-" "-"] name;
+  in
+    { imageName
+      # To find the digest of an image, you can use skopeo:
+      # skopeo inspect docker://docker.io/nixos/nix:1.11 | jq -r '.Digest'
+      # sha256:20d9485b25ecfd89204e843a962c1bd70e9cc6858d65d7f5fadc340246e2116b
+    , imageDigest
+    , sha256
+      # This used to set a tag to the pulled image
+    , finalImageTag ? "latest"
+    , name ? fixName "docker-image-${imageName}-${finalImageTag}.tar"
+    }:
+
+    runCommand name {
+      inherit imageName imageDigest;
+      imageTag = finalImageTag;
+      impureEnvVars = pkgs.stdenv.lib.fetchers.proxyImpureEnvVars;
+      outputHashMode = "flat";
+      outputHashAlgo = "sha256";
+      outputHash = sha256;
+
+      nativeBuildInputs = lib.singleton (pkgs.skopeo);
+      SSL_CERT_FILE = "${pkgs.cacert.out}/etc/ssl/certs/ca-bundle.crt";
+
+      sourceURL = "docker://${imageName}@${imageDigest}";
+      destNameTag = "${imageName}:${finalImageTag}";
+    } ''
+      skopeo copy "$sourceURL" "docker-archive://$out:$destNameTag"
+    '';
 
   # We need to sum layer.tar, not a directory, hence tarsum instead of nix-hash.
   # And we cannot untar it, because then we cannot preserve permissions ecc.
@@ -325,7 +354,9 @@ rec {
     extraCommands ? ""
   }:
     # Generate an executable script from the `runAsRoot` text.
-    let runAsRootScript = shellScript "run-as-root.sh" runAsRoot;
+    let
+      runAsRootScript = shellScript "run-as-root.sh" runAsRoot;
+      extraCommandsScript = shellScript "extra-commands.sh" extraCommands;
     in runWithOverlay {
       name = "docker-layer-${name}";
 
@@ -363,7 +394,7 @@ rec {
       '';
 
       postUmount = ''
-        (cd layer; eval "${extraCommands}")
+        (cd layer; ${extraCommandsScript})
 
         echo "Packing layer..."
         mkdir $out
@@ -389,8 +420,8 @@ rec {
   buildImage = args@{
     # Image name.
     name,
-    # Image tag.
-    tag ? "latest",
+    # Image tag, when null then the nix output hash will be used.
+    tag ? null,
     # Parent image, to append to.
     fromImage ? null,
     # Name of the parent image; will be read from the image otherwise.
@@ -440,12 +471,19 @@ rec {
         buildInputs = [ jshon pigz coreutils findutils jq ];
         # Image name and tag must be lowercase
         imageName = lib.toLower name;
-        imageTag = lib.toLower tag;
+        imageTag = if tag == null then "" else lib.toLower tag;
         inherit fromImage baseJson;
         layerClosure = writeReferencesToFile layer;
         passthru.buildArgs = args;
         passthru.layer = layer;
       } ''
+        ${lib.optionalString (tag == null) ''
+          outName="$(basename "$out")"
+          outHash=$(echo "$outName" | cut -d - -f 1)
+
+          imageTag=$outHash
+        ''}
+
         # Print tar contents:
         # 1: Interpreted as relative to the root directory
         # 2: With no trailing slashes on directories
@@ -496,6 +534,16 @@ rec {
         echo "Adding layer..."
         # Record the contents of the tarball with ls_tar.
         ls_tar temp/layer.tar >> baseFiles
+
+        # Append nix/store directory to the layer so that when the layer is loaded in the
+        # image /nix/store has read permissions for non-root users.
+        # nix/store is added only if the layer has /nix/store paths in it.
+        if [ $(wc -l < $layerClosure) -gt 1 ] && [ $(grep -c -e "^/nix/store$" baseFiles) -eq 0 ]; then
+          mkdir -p nix/store
+          chmod -R 555 nix
+          echo "./nix" >> layerFiles
+          echo "./nix/store" >> layerFiles
+        fi
 
         # Get the files in the new layer which were *not* present in
         # the old layer, and record them as newFiles.
@@ -550,7 +598,7 @@ rec {
         chmod -R a-w image
 
         echo "Cooking the image..."
-        tar -C image --hard-dereference --sort=name --mtime="@$SOURCE_DATE_EPOCH" --owner=0 --group=0 --xform s:'./':: -c . | pigz -nT > $out
+        tar -C image --hard-dereference --sort=name --mtime="@$SOURCE_DATE_EPOCH" --owner=0 --group=0 --xform s:'^./':: -c . | pigz -nT > $out
 
         echo "Finished."
       '';

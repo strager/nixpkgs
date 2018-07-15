@@ -83,6 +83,8 @@ let
 
     WebInterface ${if cfg.webInterface then "Yes" else "No"}
 
+    LogLevel ${cfg.logLevel}
+
     ${cfg.extraConf}
   '';
 
@@ -165,6 +167,15 @@ in
         '';
       };
 
+      logLevel = mkOption {
+        type = types.str;
+        default = "info";
+        example = "debug";
+        description = ''
+          Specifies the cupsd logging verbosity.
+        '';
+      };
+
       extraFilesConf = mkOption {
         type = types.lines;
         default = "";
@@ -180,7 +191,7 @@ in
         example =
           ''
             BrowsePoll cups.example.com
-            LogLevel debug
+            MaxCopies 42
           '';
         description = ''
           Extra contents of the configuration file of the CUPS daemon
@@ -257,7 +268,7 @@ in
 
   config = mkIf config.services.printing.enable {
 
-    users.extraUsers = singleton
+    users.users = singleton
       { name = "cups";
         uid = config.ids.uids.cups;
         group = "lp";
@@ -345,8 +356,6 @@ in
 
     services.printing.extraConf =
       ''
-        LogLevel info
-
         DefaultAuthType Basic
 
         <Location />

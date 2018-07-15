@@ -1,18 +1,19 @@
 { stdenv, fetchurl, flex, bison, pkgconfig, zlib, libtiff, libpng, fftw
 , cairo, readline, ffmpeg, makeWrapper, wxGTK30, netcdf, blas
-, proj, gdal, geos, sqlite, postgresql, mysql, python2Packages
+, proj, gdal, geos, sqlite, postgresql, mysql, python2Packages, libLAS
 }:
 
 stdenv.mkDerivation {
   name = "grass-7.2.2";
   src = fetchurl {
-    url = http://grass.osgeo.org/grass72/source/grass-7.2.2.tar.gz;
+    url = https://grass.osgeo.org/grass72/source/grass-7.2.2.tar.gz;
     sha256 = "0yzljbrxlqp4wbw08n1dvmm4vmwkg8glf1ff4xyh589r5ryb7gxv";
   };
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ flex bison zlib proj gdal libtiff libpng fftw sqlite cairo
-  readline ffmpeg makeWrapper wxGTK30 netcdf geos postgresql mysql.connector-c blas ]
+  readline ffmpeg makeWrapper wxGTK30 netcdf geos postgresql mysql.connector-c blas
+  libLAS ]
     ++ (with python2Packages; [ python dateutil wxPython30 numpy ]);
 
   # On Darwin the installer tries to symlink the help files into a system
@@ -33,6 +34,7 @@ stdenv.mkDerivation {
     "--with-mysql-includes=${mysql.connector-c}/include/mysql"
     "--with-mysql-libs=${mysql.connector-c}/lib/mysql"
     "--with-blas"
+    "--with-liblas=${libLAS}/bin/liblas-config"
   ];
 
   # Otherwise a very confusing "Can't load GDAL library" error

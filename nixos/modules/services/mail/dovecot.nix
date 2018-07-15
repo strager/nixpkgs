@@ -25,6 +25,7 @@ let
       ssl_cert = <${cfg.sslServerCert}
       ssl_key = <${cfg.sslServerKey}
       ${optionalString (!(isNull cfg.sslCACert)) ("ssl_ca = <" + cfg.sslCACert)}
+      ssl_dh = <${config.security.dhparams.params.dovecot2.path}
       disable_plaintext_auth = yes
     '')
 
@@ -297,15 +298,18 @@ in
 
 
   config = mkIf cfg.enable {
-
     security.pam.services.dovecot2 = mkIf cfg.enablePAM {};
 
-    services.dovecot2.protocols =
+    security.dhparams = mkIf (! isNull cfg.sslServerCert) {
+      enable = true;
+      params.dovecot2 = {};
+    };
+   services.dovecot2.protocols =
      optional cfg.enableImap "imap"
      ++ optional cfg.enablePop3 "pop3"
      ++ optional cfg.enableLmtp "lmtp";
 
-    users.extraUsers = [
+    users.users = [
       { name = "dovenull";
         uid = config.ids.uids.dovenull2;
         description = "Dovecot user for untrusted logins";
@@ -324,7 +328,7 @@ in
            group = cfg.mailGroup;
          });
 
-    users.extraGroups = optional (cfg.group == "dovecot2")
+    users.groups = optional (cfg.group == "dovecot2")
       { name = "dovecot2";
         gid = config.ids.gids.dovecot2;
       }

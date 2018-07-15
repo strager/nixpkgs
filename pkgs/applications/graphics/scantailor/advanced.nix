@@ -4,13 +4,13 @@
 
 stdenv.mkDerivation rec {
   name = "scantailor-advanced-${version}";
-  version = "1.0.12";
+  version = "1.0.15";
 
   src = fetchFromGitHub {
     owner = "4lex4";
     repo = "scantailor-advanced";
     rev = "v${version}";
-    sha256 = "0i80jzky7l8wdv0wqdx48x1q0wmj72hhm0050pd43q80pj5r78a0";
+    sha256 = "031jqk64ig6lmscl5yg5lp116zwn0jl7xs9rlniqf6a8g4wfbjk9";
   };
 
   nativeBuildInputs = [ cmake qttools ];
@@ -44,6 +44,6 @@ stdenv.mkDerivation rec {
     description = "Interactive post-processing tool for scanned pages";
     license = licenses.gpl3Plus;
     maintainers = with maintainers; [ jfrankenau ];
-    platforms = platforms.gnu;
+    platforms = platforms.gnu ++ platforms.linux;
   };
 }

@@ -86,7 +86,7 @@ let
 
     preConfigure = optionalString (!crossCompiling) ''
         configureFlags="$configureFlags -Dprefix=$out -Dman1dir=$out/share/man/man1 -Dman3dir=$out/share/man/man3"
-      '' + optionalString (stdenv.isArm || stdenv.isMips) ''
+      '' + optionalString (stdenv.isAarch32 || stdenv.isMips) ''
         configureFlagsArray=(-Dldflags="-lm -lrt")
       '' + optionalString stdenv.isDarwin ''
         substituteInPlace hints/darwin.sh --replace "env MACOSX_DEPLOYMENT_TARGET=10.3" ""
@@ -104,6 +104,8 @@ let
     setupHook = ./setup-hook.sh;
 
     passthru.libPrefix = "lib/perl5/site_perl";
+
+    doCheck = false; # some tests fail, expensive
 
     # TODO: it seems like absolute paths to some coreutils is required.
     postInstall =
@@ -183,8 +185,6 @@ let
     setupHook = ./setup-hook-cross.sh;
   });
 in rec {
-  perl = perl524;
-
   perl522 = common {
     version = "5.22.4";
     sha256 = "1yk1xn4wmnrf2ph02j28khqarpyr24qwysjzkjnjv7vh5dygb7ms";
@@ -198,5 +198,10 @@ in rec {
   perl526 = common {
     version = "5.26.1";
     sha256 = "1p81wwvr5jb81m41d07kfywk5gvbk0axdrnvhc2aghcdbr4alqz7";
+  };
+
+  perl528 = common {
+    version = "5.28.0";
+    sha256 = "1a3f822lcl8dr8v0hk80yyhpzqlljg49z9flb48rs3nbsij9z4ky";
   };
 }

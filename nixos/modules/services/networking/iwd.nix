@@ -26,8 +26,12 @@ in {
       wants = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
 
-      serviceConfig.ExecStart = "${pkgs.iwd}/bin/iwd";
+      serviceConfig.ExecStart = "${pkgs.iwd}/libexec/iwd";
     };
+
+    systemd.tmpfiles.rules = [
+      "d /var/lib/iwd 0700 root root -"
+    ];
   };
 
   meta.maintainers = with lib.maintainers; [ mic92 ];

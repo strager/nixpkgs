@@ -1,15 +1,15 @@
 { stdenv, fetchFromGitHub, fetchpatch, autoreconfHook, pkgconfig, boost, libevent
-, double-conversion, glog, google-gflags, python, libiberty, openssl }:
+, double-conversion, glog, google-gflags, gtest, python, libiberty, openssl }:
 
 stdenv.mkDerivation rec {
   name = "folly-${version}";
-  version = "2018.03.26.00";
+  version = "2018.07.09.00";
 
   src = fetchFromGitHub {
     owner = "facebook";
     repo = "folly";
     rev = "v${version}";
-    sha256 = "137d9b9k2m02r8f2w31qj3gc18hpm5g51bcl60g6vzdqzwzizzyr";
+    sha256 = "08irwa2pb3f2gnk31rq31jjrqk2xxx0a0m72gf0bsv2w9fgn5sfm";
   };
 
   nativeBuildInputs = [ autoreconfHook python pkgconfig ];
@@ -24,12 +24,16 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
+  checkInputs = [ gtest ];
+  checkTarget = "check";
+  doCheck = true;
+
   meta = with stdenv.lib; {
     description = "An open-source C++ library developed and used at Facebook";
     homepage = https://github.com/facebook/folly;
     license = licenses.asl20;
     # 32bit is not supported: https://github.com/facebook/folly/issues/103
-    platforms = [ "x86_64-linux" ];
+    platforms = [ "x86_64-darwin" "x86_64-linux" ];
     maintainers = with maintainers; [ abbradar ];
   };
 }

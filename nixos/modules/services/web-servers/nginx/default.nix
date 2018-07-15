@@ -38,6 +38,7 @@ let
       ${toString (flip mapAttrsToList upstream.servers (name: server: ''
         server ${name} ${optionalString server.backup "backup"};
       ''))}
+      ${upstream.extraConfig}
     }
   ''));
 
@@ -218,7 +219,10 @@ let
             ssl_certificate_key ${vhost.sslCertificateKey};
           ''}
 
-          ${optionalString (vhost.basicAuth != {}) (mkBasicAuth vhostName vhost.basicAuth)}
+          ${optionalString (vhost.basicAuthFile != null || vhost.basicAuth != {}) ''
+            auth_basic secured;
+            auth_basic_user_file ${if vhost.basicAuthFile != null then vhost.basicAuthFile else mkHtpasswd vhostName vhost.basicAuth};
+          ''}
 
           ${mkLocations vhost.locations}
 
@@ -248,16 +252,11 @@ let
       ${optionalString (config.proxyPass != null && cfg.recommendedProxySettings) "include ${recommendedProxyConfig};"}
     }
   '') locations);
-  mkBasicAuth = vhostName: authDef: let
-    htpasswdFile = pkgs.writeText "${vhostName}.htpasswd" (
-      concatStringsSep "\n" (mapAttrsToList (user: password: ''
-        ${user}:{PLAIN}${password}
-      '') authDef)
-    );
-  in ''
-    auth_basic secured;
-    auth_basic_user_file ${htpasswdFile};
-  '';
+  mkHtpasswd = vhostName: authDef: pkgs.writeText "${vhostName}.htpasswd" (
+    concatStringsSep "\n" (mapAttrsToList (user: password: ''
+      ${user}:{PLAIN}${password}
+    '') authDef)
+  );
 in
 
 {
@@ -494,6 +493,13 @@ in
               '';
               default = {};
             };
+            extraConfig = mkOption {
+              type = types.lines;
+              default = "";
+              description = ''
+                These lines go to the end of the upstream verbatim.
+              '';
+            };
           };
         });
         description = ''
@@ -607,13 +613,13 @@ in
         listToAttrs acmePairs
     );
 
-    users.extraUsers = optionalAttrs (cfg.user == "nginx") (singleton
+    users.users = optionalAttrs (cfg.user == "nginx") (singleton
       { name = "nginx";
         group = cfg.group;
         uid = config.ids.uids.nginx;
       });
 
-    users.extraGroups = optionalAttrs (cfg.group == "nginx") (singleton
+    users.groups = optionalAttrs (cfg.group == "nginx") (singleton
       { name = "nginx";
         gid = config.ids.gids.nginx;
       });

@@ -56,6 +56,17 @@ let
 
     bap = callPackage ../development/ocaml-modules/bap {
       inherit (janeStreet_0_9_0) core_kernel ppx_jane parsexp;
+      ezjsonm = ezjsonm.override {
+        inherit (janeStreet_0_9_0) sexplib;
+        hex = hex.override {
+          cstruct = cstruct.override {
+            inherit (janeStreet_0_9_0) sexplib;
+          };
+        };
+      };
+      uri = uri.override {
+        inherit (janeStreet_0_9_0) ppx_sexp_conv sexplib;
+      };
     };
 
     batteries = callPackage ../development/ocaml-modules/batteries { };
@@ -139,8 +150,6 @@ let
 
     cil = callPackage ../development/ocaml-modules/cil { };
 
-    cmdliner_0_9 = callPackage ../development/ocaml-modules/cmdliner/0.9.nix { };
-
     cmdliner = callPackage ../development/ocaml-modules/cmdliner { };
 
     cohttp_p4 = callPackage ../development/ocaml-modules/cohttp/0.19.3.nix {
@@ -215,14 +224,13 @@ let
 
     dtoa = callPackage ../development/ocaml-modules/dtoa { };
 
+    earley = callPackage ../development/ocaml-modules/earley { };
+
+    earley_ocaml = callPackage ../development/ocaml-modules/earley_ocaml { };
+
     easy-format = callPackage ../development/ocaml-modules/easy-format { };
 
-    eff = callPackage ../development/interpreters/eff { };
-
-    eliom = callPackage ../development/ocaml-modules/eliom {
-      lwt = lwt2;
-      js_of_ocaml = js_of_ocaml_2;
-    };
+    eliom = callPackage ../development/ocaml-modules/eliom { };
 
     enumerate = callPackage ../development/ocaml-modules/enumerate { };
 
@@ -234,9 +242,7 @@ let
 
     estring = callPackage ../development/ocaml-modules/estring { };
 
-    ezjsonm = callPackage ../development/ocaml-modules/ezjsonm {
-      lwt = ocaml_lwt;
-    };
+    ezjsonm = callPackage ../development/ocaml-modules/ezjsonm { };
 
     facile = callPackage ../development/ocaml-modules/facile { };
 
@@ -271,6 +277,8 @@ let
     herelib = callPackage ../development/ocaml-modules/herelib { };
 
     higlo = callPackage ../development/ocaml-modules/higlo { };
+
+    imagelib = callPackage ../development/ocaml-modules/imagelib { };
 
     inotify = callPackage ../development/ocaml-modules/inotify { };
 
@@ -311,6 +319,8 @@ let
 
     inifiles = callPackage ../development/ocaml-modules/inifiles { };
 
+    iri = callPackage ../development/ocaml-modules/iri { };
+
     jingoo = callPackage ../development/ocaml-modules/jingoo {
       pcre = ocaml_pcre;
     };
@@ -333,6 +343,8 @@ let
     js_of_ocaml-ppx = callPackage ../development/tools/ocaml/js_of_ocaml/ppx.nix {};
 
     js_of_ocaml-ppx_deriving_json = callPackage ../development/tools/ocaml/js_of_ocaml/ppx_deriving_json.nix {};
+
+    js_of_ocaml-tyxml = callPackage ../development/tools/ocaml/js_of_ocaml/tyxml.nix {};
 
     jsonm = callPackage ../development/ocaml-modules/jsonm { };
 
@@ -360,6 +372,8 @@ let
       then callPackage ../development/ocaml-modules/lambda-term { }
       else lambdaTerm-1_6;
 
+    linenoise = callPackage ../development/ocaml-modules/linenoise { };
+
     llvm = callPackage ../development/ocaml-modules/llvm {
       llvm = pkgs.llvm_39;
     };
@@ -377,6 +391,10 @@ let
       else throw "lwt3 is not available for OCaml ${ocaml.version}";
 
     ocaml_lwt = if lib.versionOlder "4.02" ocaml.version then lwt3 else lwt2;
+
+    lwt_log = callPackage ../development/ocaml-modules/lwt_log {
+      lwt = lwt3;
+    };
 
     lwt_ppx = callPackage ../development/ocaml-modules/lwt/ppx.nix {
       lwt = lwt3;
@@ -489,12 +507,11 @@ let
 
     ocf = callPackage ../development/ocaml-modules/ocf { };
 
-    ocpBuild = callPackage ../development/tools/ocaml/ocp-build { };
+    ocp-build = callPackage ../development/tools/ocaml/ocp-build { };
 
-    ocpIndent = callPackage ../development/tools/ocaml/ocp-indent { };
-    ocpIndent_1_5_2 = callPackage ../development/tools/ocaml/ocp-indent/1.5.2.nix { cmdliner = cmdliner_0_9; };
+    ocp-indent = callPackage ../development/tools/ocaml/ocp-indent { };
 
-    ocp-index = callPackage ../development/tools/ocaml/ocp-index { ocpIndent = ocpIndent_1_5_2; };
+    ocp-index = callPackage ../development/tools/ocaml/ocp-index { };
 
     ocp-ocamlres = callPackage ../development/ocaml-modules/ocp-ocamlres { };
 
@@ -504,7 +521,7 @@ let
 
     ocplib-simplex = callPackage ../development/ocaml-modules/ocplib-simplex { };
 
-    ocsigen_server = callPackage ../development/ocaml-modules/ocsigen-server { lwt = lwt2; };
+    ocsigen_server = callPackage ../development/ocaml-modules/ocsigen-server { };
 
     ocsigen-start = callPackage ../development/ocaml-modules/ocsigen-start { };
 
@@ -516,6 +533,8 @@ let
 
     omd = callPackage ../development/ocaml-modules/omd { };
 
+    opam-file-format = callPackage ../development/ocaml-modules/opam-file-format { };
+
     otfm = callPackage ../development/ocaml-modules/otfm { };
 
     otr = callPackage ../development/ocaml-modules/otr { };
@@ -526,6 +545,10 @@ let
 
     piqi = callPackage ../development/ocaml-modules/piqi { };
     piqi-ocaml = callPackage ../development/ocaml-modules/piqi-ocaml { };
+
+    ppxlib = callPackage ../development/ocaml-modules/ppxlib { };
+
+    psmt2-frontend = callPackage ../development/ocaml-modules/psmt2-frontend { };
 
     psq = callPackage ../development/ocaml-modules/psq { };
 
@@ -729,7 +752,7 @@ let
     janeStreet = import ../development/ocaml-modules/janestreet {
       inherit lib janePackage ocaml ocamlbuild angstrom ctypes cryptokit;
       inherit magic-mime num ocaml-migrate-parsetree octavius ounit;
-      inherit ppx_deriving re zarith;
+      inherit ppx_deriving re zarith ppxlib;
       inherit (pkgs) stdenv openssl;
     };
     
@@ -1042,7 +1065,14 @@ in rec
 
   ocamlPackages_4_06 = mkOcamlPackages (callPackage ../development/compilers/ocaml/4.06.nix { }) (self: super: { });
 
+  ocamlPackages_4_07 = mkOcamlPackages (callPackage ../development/compilers/ocaml/4.07.nix { }) (self: super: { });
+
   ocamlPackages_latest = ocamlPackages_4_06;
 
-  ocamlPackages = ocamlPackages_4_05;
+  ocamlPackages =
+    # OCaml 4.05 is broken on aarch64
+    if system == "aarch64-linux" then
+      ocamlPackages_4_06
+    else
+      ocamlPackages_4_05;
 }

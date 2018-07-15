@@ -111,12 +111,12 @@ in {
   };
 
   config = mkIf (cfg.enable) {
-    users.extraUsers = optional (cfg.user == "infinoted")
+    users.users = optional (cfg.user == "infinoted")
       { name = "infinoted";
         description = "Infinoted user";
         group = cfg.group;
       };
-    users.extraGroups = optional (cfg.group == "infinoted")
+    users.groups = optional (cfg.group == "infinoted")
       { name = "infinoted";
       };
   
@@ -129,7 +129,7 @@ in {
         serviceConfig = {
           Type = "simple";
           Restart = "always";
-          ExecStart = "${cfg.package}/bin/infinoted-0.6 --config-file=/var/lib/infinoted/infinoted.conf";
+          ExecStart = "${cfg.package}/bin/infinoted-${versions.majorMinor cfg.package.version} --config-file=/var/lib/infinoted/infinoted.conf";
           User = cfg.user;
           Group = cfg.group;
           PermissionsStartOnly = true;

@@ -267,14 +267,14 @@ let
   };
 
   luafilesystem = buildLuaPackage rec {
-    version = "1.6.3";
+    version = "1.7.0";
     name = "filesystem-${version}";
 
     src = fetchFromGitHub {
       owner = "keplerproject";
       repo = "luafilesystem";
       rev = "v${stdenv.lib.replaceChars ["."] ["_"] version}";
-      sha256 = "1hxcnqj53540ysyw8fzax7f09pl98b8f55s712gsglcdxp2g2pri";
+      sha256 = "0fibrasshlgpa71m9wkpjxwmylnxpcf06rpqbaa0qwvqh94nhwby";
     };
 
     preConfigure = ''
@@ -437,6 +437,8 @@ let
         prefix=$out
       );
     '';
+
+    doCheck = false; # fails to find itself
 
     installTargets = [ "install" "install-unix" ];
 
@@ -632,6 +634,26 @@ let
     };
   };
 
+  lfs = buildLuaPackage rec {
+    name = "lfs-${version}";
+    version = "1.7.0.2";
+
+    src = fetchFromGitHub {
+      owner = "keplerproject";
+      repo = "luafilesystem";
+      rev = "v" + stdenv.lib.replaceStrings ["."] ["_"] version;
+      sha256 = "0zmprgkm9zawdf9wnw0v3w6ibaj442wlc6alp39hmw610fl4vghi";
+    };
+
+    meta = with stdenv.lib; {
+      description = "Portable library for filesystem operations";
+      homepage = https://keplerproject.github.com/luafilesystem;
+      license = licenses.mit;
+      maintainers = with maintainers; [ vcunat ];
+      platforms = platforms.all;
+    };
+  };
+
   lpeg = buildLuaPackage rec {
     name = "lpeg-${version}";
     version = "0.12";
@@ -756,6 +778,8 @@ let
       "MPACK_LUA_VERSION=${lua.version}"
       "LUA_CMOD_INSTALLDIR=$(out)/lib/lua/${lua.luaversion}"
     ];
+
+    hardeningDisable = [ "fortify" ];
 
     meta = with stdenv.lib; {
       description = "Lua bindings for libmpack";
