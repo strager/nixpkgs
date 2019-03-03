@@ -3,6 +3,10 @@
   confFile ? config.watchman.confFile or null,
   withApple ? stdenv.isDarwin, CoreServices, CoreFoundation,
   cmake,
+  libevent,
+  glog,
+  gflags,
+  folly,
 }:
 
 stdenv.mkDerivation rec {
@@ -13,11 +17,12 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "facebook";
     repo = "watchman";
-    rev = "fb7ac3df7031a531b1f74bc980cb8dd9a621363b";
-    sha256 = "1iklfswg2qbp0bjgim66a44yygjg49i3n6dz1iap53d4fn3namgq";
+    rev = "6af1de6af496aeeb66fe864cc760d99344531271";
+    sha256 = "0fkv5iba97ai29ix262p8gw7ych6mqrcknn1pl95zj1gavr8ydrg";
   };
   patches = [
     ./conflicts.patch
+    ./cxxflags.patch
     ./no-python.patch
     ./pcre.patch
     ./watchman-config-file-1.patch
@@ -26,14 +31,16 @@ stdenv.mkDerivation rec {
     ./watchman-state-dir.patch
   ];
 
-  buildInputs = [ pcre openssl ]
+  buildInputs = [ pcre openssl libevent glog folly gflags ]
                ++ lib.optionals withApple [ CoreFoundation CoreServices ];
   nativeBuildInputs = [ cmake ];
 
   cmakeFlags = [
+    "-DCMAKE_CXX_STANDARD=14"
     "-DWATCHMAN_CONFIG_FILE:STRING="
     "-DWATCHMAN_STATE_DIR:STRING="
   ];
+  CXXFLAGS = [ "-D__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=0" ];
 
   prePatch = ''
     patchShebangs .
