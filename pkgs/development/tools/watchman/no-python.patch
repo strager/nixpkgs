@@ -1,0 +1,19 @@
+commit 57a66a571cffe0c555fd4f18c8a80086cb53f662
+Author: Matthew Glazar <strager.nds@gmail.com>
+Date:   Sun Mar 31 18:16:09 2019 -0700
+
+    Don't require Python
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f2bab746..bec04e8b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -163,7 +163,7 @@ if(OPENSSL_FOUND AND NOT TARGET OpenSSL::Crypto)
+     endif()
+ endif()
+
+-find_package(PythonInterp REQUIRED)
++find_package(PythonInterp)
+
+ if(PYTHONINTERP_FOUND)
+   set(PYOUT "${CMAKE_CURRENT_BINARY_DIR}/build/pytimestamp")

@@ -1,7 +1,8 @@
-{ stdenv, lib, config, fetchFromGitHub, autoconf, automake, pcre,
-  libtool, pkgconfig, openssl,
+{ stdenv, lib, config, fetchFromGitHub, pcre,
+  openssl,
   confFile ? config.watchman.confFile or null,
-  withApple ? stdenv.isDarwin, CoreServices, CoreFoundation
+  withApple ? stdenv.isDarwin, CoreServices, CoreFoundation,
+  cmake,
 }:
 
 stdenv.mkDerivation rec {
@@ -15,28 +16,27 @@ stdenv.mkDerivation rec {
     rev = "fb7ac3df7031a531b1f74bc980cb8dd9a621363b";
     sha256 = "1iklfswg2qbp0bjgim66a44yygjg49i3n6dz1iap53d4fn3namgq";
   };
-  patches = [ ./watchman-config-file.patch ];
+  patches = [
+    ./conflicts.patch
+    ./no-python.patch
+    ./pcre.patch
+    ./watchman-config-file-1.patch
+    ./watchman-config-file-2.patch
+    ./watchman-config-file.patch
+    ./watchman-state-dir.patch
+  ];
 
   buildInputs = [ pcre openssl ]
                ++ lib.optionals withApple [ CoreFoundation CoreServices ];
-  nativeBuildInputs = [ autoconf automake pkgconfig libtool ];
+  nativeBuildInputs = [ cmake ];
 
-  configureFlags = [
-      "--enable-lenient"
-      "--enable-conffile=${if confFile == null then "no" else confFile}"
-      "--with-pcre=yes"
-
-      # For security considerations re: --disable-statedir, see:
-      # https://github.com/facebook/watchman/issues/178
-      "--disable-statedir"
+  cmakeFlags = [
+    "-DWATCHMAN_CONFIG_FILE:STRING="
+    "-DWATCHMAN_STATE_DIR:STRING="
   ];
 
   prePatch = ''
     patchShebangs .
-  '';
-
-  preConfigure = ''
-    ./autogen.sh
   '';
 
   meta = with lib; {

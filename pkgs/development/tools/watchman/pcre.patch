@@ -1,0 +1,78 @@
+commit 774d5f18ea16cb2005967892075d8ad676e0f5f6
+Author: Wez Furlong <wez@fb.com>
+Date:   Wed Dec 19 22:57:57 2018 -0800
+
+    expand cmake bits to probe for pcre
+
+    Summary:
+    This is one function that we have in autoconf that we didn't
+    yet have in cmake.
+
+    Refs: https://github.com/facebook/watchman/pull/636
+
+    Reviewed By: strager
+
+    Differential Revision: D13486482
+
+    fbshipit-source-id: 0b111bec2a5d40580b60244c198e138d7869e9e9
+
+diff --git a/CMake/FindPCRE.cmake b/CMake/FindPCRE.cmake
+new file mode 100644
+index 00000000..ab94c696
+--- /dev/null
++++ b/CMake/FindPCRE.cmake
+@@ -0,0 +1,10 @@
++include(FindPackageHandleStandardArgs)
++find_path(PCRE_INCLUDE_DIR NAMES pcre.h)
++find_library(PCRE_LIBRARY NAMES pcre)
++find_package_handle_standard_args(
++  PCRE
++  DEFAULT_MSG
++  PCRE_LIBRARY
++  PCRE_INCLUDE_DIR
++)
++mark_as_advanced(PCRE_INCLUDE_DIR PCRE_LIBRARY)
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9c25ec82..aac6473d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2,6 +2,7 @@
+ # available in the configure script!  At this time you should prefer to
+ # use the configure script to build and install watchman!
+ cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
++set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
+ enable_testing()
+ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+ include_directories(${CMAKE_CURRENT_BINARY_DIR})
+@@ -123,6 +124,10 @@ if(have_fcntl.h)
+     config_h("#define HAVE_DECL_O_SYMLINK 1")
+   endif()
+ endif()
++find_package(PCRE)
++if(PCRE_FOUND)
++  config_h("#define HAVE_PCRE_H 1")
++endif()
+
+ # Now close out config.h.  We only want to touch the file if the contents are
+ # different, so do a little dance to figure that out.
+@@ -330,7 +335,7 @@ query/intcompare.cpp
+ query/match.cpp
+ query/name.cpp
+ query/parse.cpp
+-# query/pcre.cpp
++query/pcre.cpp
+ query/since.cpp
+ query/suffix.cpp
+ query/type.cpp
+@@ -403,6 +408,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+   target_link_libraries(watchman shlwapi.lib advapi32.lib dbghelp.lib)
+ endif()
++if(PCRE_FOUND)
++  target_link_libraries(watchman ${PCRE_LIBRARY})
++  target_include_directories(watchman PUBLIC ${PCRE_INCLUDE_DIR})
++endif()
++
+
+ target_link_libraries(watchman Threads::Threads)
+ if(TARGET OpenSSL::Crypto)
