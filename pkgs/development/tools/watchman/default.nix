@@ -7,14 +7,15 @@
 stdenv.mkDerivation rec {
   name = "watchman-${version}";
 
-  version = "4.9.0";
+  version = "4.9.4";
 
   src = fetchFromGitHub {
     owner = "facebook";
     repo = "watchman";
-    rev = "v${version}";
-    sha256 = "0fdaj5pmicm6j17d5q7px800m5rmam1a400x3hv1iiifnmhgnkal";
+    rev = "fb7ac3df7031a531b1f74bc980cb8dd9a621363b";
+    sha256 = "1iklfswg2qbp0bjgim66a44yygjg49i3n6dz1iap53d4fn3namgq";
   };
+  patches = [ ./watchman-config-file.patch ];
 
   buildInputs = [ pcre openssl ]
                ++ lib.optionals withApple [ CoreFoundation CoreServices ];

@@ -1,0 +1,110 @@
+commit 3a2bd8dab53171c172891be41c057fb53b19d294
+Author: Matt Glazar <strager@fb.com>
+Date:   Fri Jul 13 19:40:44 2018 -0700
+
+    Fix "use of undeclared identifier 'WATCHMAN_CONFIG_FILE'"
+
+    Summary:
+    Configuring Watchman with --enable-conffile=no causes Watchman to fail
+    to compile:
+
+        cmds/watch.cpp:231:7: error: use of undeclared identifier 'WATCHMAN_CONFIG_FILE'
+              WATCHMAN_CONFIG_FILE,
+              ^
+        root/resolve.cpp:220:9: error: use of undeclared identifier 'WATCHMAN_CONFIG_FILE'
+                WATCHMAN_CONFIG_FILE,
+                ^
+
+    Using WATCHMAN_CONFIG_FILE in these places is wrong for two reasons:
+
+    * The WATCHMAN_CONFIG_FILE macro may be not defined, hence the
+      compilation error with --enable-conffile=no.
+    * The user can set WATCHMAN_CONFIG_FILE at run-time using the
+      WATCHMAN_CONFIG_FILE environment variable.
+
+    Fix the compilation error by exposing the config file's path from the
+    config module.
+
+    Reviewed By: wez
+
+    Differential Revision: D8431235
+
+    fbshipit-source-id: d474ae60eec1c7adff25ef943555e11ef957dab7
+
+diff --git a/cfg.cpp b/cfg.cpp
+index 97a35c43..2765d2b7 100644
+--- a/cfg.cpp
++++ b/cfg.cpp
+@@ -7,6 +7,7 @@
+ namespace {
+ struct config_state {
+   json_ref global_cfg;
++  w_string global_config_file_path;
+   json_ref arg_cfg;
+ };
+ watchman::Synchronized<config_state> configState;
+@@ -21,6 +22,10 @@ void cfg_shutdown(void)
+   state->arg_cfg.reset();
+ }
+
++w_string cfg_get_global_config_file_path(void) {
++  return configState.rlock()->global_config_file_path;
++}
++
+ void cfg_load_global_config_file(void)
+ {
+   json_error_t err;
+@@ -46,7 +51,9 @@ void cfg_load_global_config_file(void)
+     return;
+   }
+
+-  configState.wlock()->global_cfg = config;
++  auto lockedState = configState.wlock();
++  lockedState->global_cfg = config;
++  lockedState->global_config_file_path = cfg_file;
+ }
+
+ void cfg_set_arg(const char* name, const json_ref& val) {
+diff --git a/cmds/watch.cpp b/cmds/watch.cpp
+index ddbad85b..8c3ded00 100644
+--- a/cmds/watch.cpp
++++ b/cmds/watch.cpp
+@@ -228,7 +228,7 @@ resolve_projpath(const json_ref& args, char** errmsg, w_string& relpath) {
+       "One or more of these files must be present in order to allow "
+       "a watch. Try pulling and checking out a newer version of the project?",
+       path,
+-      WATCHMAN_CONFIG_FILE,
++      cfg_get_global_config_file_path().c_str(),
+       root_files_list.c_str()));
+
+   return nullptr;
+diff --git a/root/resolve.cpp b/root/resolve.cpp
+index 26ce238f..41de504d 100644
+--- a/root/resolve.cpp
++++ b/root/resolve.cpp
+@@ -217,7 +217,7 @@ std::shared_ptr<w_root_t> root_resolve(
+         "present in order to allow a watch.  Try pulling "
+         "and checking out a newer version of the project?",
+         root_str.c_str(),
+-        WATCHMAN_CONFIG_FILE,
++        cfg_get_global_config_file_path().c_str(),
+         root_files_list.c_str()));
+     w_log(W_LOG_ERR, "resolve_root: %s\n", *errmsg);
+     return nullptr;
+diff --git a/watchman_config.h b/watchman_config.h
+index 470f6e97..01400851 100644
+--- a/watchman_config.h
++++ b/watchman_config.h
+@@ -2,9 +2,12 @@
+  * Licensed under the Apache License, Version 2.0 */
+ #pragma once
+
++class w_string;
++
+ void cfg_shutdown(void);
+ void cfg_set_arg(const char* name, const json_ref& val);
+ void cfg_load_global_config_file(void);
++w_string cfg_get_global_config_file_path(void);
+ json_ref cfg_get_json(const char* name);
+ const char* cfg_get_string(const char* name, const char* defval);
+ json_int_t cfg_get_int(const char* name, json_int_t defval);
