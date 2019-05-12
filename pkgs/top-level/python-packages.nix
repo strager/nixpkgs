@@ -857,6 +857,8 @@ in {
 
   python-engineio = callPackage ../development/python-modules/python-engineio { };
 
+  python-gettext = callPackage ../development/python-modules/python-gettext { };
+
   python-hosts = callPackage ../development/python-modules/python-hosts { };
 
   python-lz4 = callPackage ../development/python-modules/python-lz4 { };

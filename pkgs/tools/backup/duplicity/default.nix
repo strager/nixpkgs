@@ -1,48 +1,73 @@
-{ stdenv, fetchpatch, fetchurl, python2Packages, librsync, ncftp, gnupg
+{ stdenv, fetchpatch, fetchurl, python3Packages, librsync, ncftp, gnupg
 , gnutar
 , par2cmdline
 , utillinux
 , rsync, makeWrapper }:
 
-python2Packages.buildPythonApplication rec {
+python3Packages.buildPythonApplication rec {
   name = "duplicity-${version}";
-  version = "0.7.19";
+  version = "0.8.x";
 
   src = fetchurl {
-    url = "https://code.launchpad.net/duplicity/${stdenv.lib.versions.majorMinor version}-series/${version}/+download/${name}.tar.gz";
-    sha256 = "0ag9dknslxlasslwfjhqgcqbkb1mvzzx93ry7lch2lfzcdd91am6";
+    #url = "https://code.launchpad.net/duplicity/${stdenv.lib.versions.majorMinor version}-series/${version}/+download/${name}.tar.gz";
+    name = "duplicity-0.8-r1387.tar.gz";
+    url = "https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/tarball/1387?start_revid=1387";
+    sha256 = "1hg09970py2wb411wss2an9k6i9b8m4d2289fps7l0lhgvca3p93"; # @nocommit
   };
+  sourceRoot = "~duplicity-team/duplicity/0.8-series";
   patches = [
-    ./gnutar-in-test.patch
-    ./use-installed-scripts-in-test.patch
+    #./gnutar-in-test.patch
+    #./use-installed-scripts-in-test.patch
 
     # The following patches improve the performance of installCheckPhase:
     # Ensure all duplicity output is captured in tests
-    (fetchpatch {
-      extraPrefix = "";
-      sha256 = "07ay3mmnw8p2j3v8yvcpjsx0rf2jqly9ablwjpmry23dz9f0mxsd";
-      url = "https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/diff/1359.2.1";
-    })
-    # Minimize time spent sleeping between backups
-    (fetchpatch {
-      extraPrefix = "";
-      sha256 = "0v99q6mvikb8sf68gh3s0zg12pq8fijs87fv1qrvdnc8zvs4pmfs";
-      url = "https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/diff/1359.2.2";
-    })
-    # Remove unnecessary sleeping after running backups in tests
-    (fetchpatch {
-      extraPrefix = "";
-      sha256 = "1bmgp4ilq2gwz2k73fxrqplf866hj57lbyabaqpkvwxhr0ch1jiq";
-      url = "https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/diff/1359.2.3";
-    })
+#    (fetchpatch {
+#      extraPrefix = "";
+#      sha256 = "07ay3mmnw8p2j3v8yvcpjsx0rf2jqly9ablwjpmry23dz9f0mxsd";
+#      url = "https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/diff/1359.2.1";
+#    })
+#    # Minimize time spent sleeping between backups
+#    (fetchpatch {
+#      extraPrefix = "";
+#      sha256 = "0v99q6mvikb8sf68gh3s0zg12pq8fijs87fv1qrvdnc8zvs4pmfs";
+#      url = "https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/diff/1359.2.2";
+#    })
+#    # Remove unnecessary sleeping after running backups in tests
+#    (fetchpatch {
+#      extraPrefix = "";
+#      sha256 = "1bmgp4ilq2gwz2k73fxrqplf866hj57lbyabaqpkvwxhr0ch1jiq";
+#      url = "https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/diff/1359.2.3";
+#    })
   ] ++ stdenv.lib.optionals stdenv.isLinux [
     ./linux-disable-timezone-test.patch
   ];
 
-  buildInputs = [ librsync makeWrapper python2Packages.wrapPython ];
-  propagatedBuildInputs = with python2Packages; [
-    boto cffi cryptography ecdsa enum idna pygobject3 fasteners
+  buildInputs = [ librsync makeWrapper python3Packages.wrapPython ];
+  propagatedBuildInputs = with python3Packages; [
+    boto cffi cryptography ecdsa idna pygobject3 fasteners
     ipaddress lockfile paramiko pyasn1 pycrypto six
+
+    # From requirements.txt:
+    fasteners
+    future
+    mock
+    python-gettext
+    requests
+    urllib3
+    # azure
+    # b2
+    # boto
+    # dropbox==6.9.0
+    # gdata
+    # jottalib
+    # mediafire
+    # paramiko
+    # pydrive
+    # pyrax
+    # python-cloudfiles
+    # python-swiftclient
+    # requests_oauthlib
+
   ];
   checkInputs = [
     gnupg  # Add 'gpg' to PATH.
@@ -51,7 +76,7 @@ python2Packages.buildPythonApplication rec {
     par2cmdline  # Add 'par2' to PATH.
   ] ++ stdenv.lib.optionals stdenv.isLinux [
     utillinux  # Add 'setsid' to PATH.
-  ] ++ (with python2Packages; [ lockfile mock pexpect ]);
+  ] ++ (with python3Packages; [ lockfile mock pexpect ]);
 
   postInstall = ''
     wrapProgram $out/bin/duplicity \
@@ -64,6 +89,7 @@ python2Packages.buildPythonApplication rec {
     wrapPythonProgramsIn "$PWD/testing/overrides/bin" "$pythonPath"
 
     # Add 'duplicity' to PATH for tests.
+    # @nocommit s/2.7/3.x/
     # Normally, 'setup.py test' adds 'build/scripts-2.7/' to PATH before running
     # tests. However, 'build/scripts-2.7/duplicity' is not wrapped, so its
     # shebang is incorrect and it fails to run inside Nix' sandbox.
@@ -83,7 +109,8 @@ python2Packages.buildPythonApplication rec {
   # TODO: Fix test failures on macOS 10.13:
   #
   # > OSError: out of pty devices
-  doCheck = !stdenv.isDarwin;
+  #doCheck = !stdenv.isDarwin;
+  doCheck = true;
 
   meta = with stdenv.lib; {
     description = "Encrypted bandwidth-efficient backup using the rsync algorithm";
