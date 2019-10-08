@@ -1,0 +1,25 @@
+diff --git a/analyzer/tests/Makefile b/analyzer/tests/Makefile
+index f4026154..40955728 100644
+--- a/analyzer/tests/Makefile
++++ b/analyzer/tests/Makefile
+@@ -10,7 +10,7 @@ NOSECFG = --config .noserc
+
+ test_in_env: pycodestyle_in_env pylint_in_env test_unit_in_env test_functional_in_env test_build_logger test_tu_collector_in_env
+
+-test: pycodestyle pylint test_unit test_functional test_build_logger test_tu_collector
++test: test_unit test_functional test_build_logger test_tu_collector
+
+ PYCODESTYLE_TEST_CMD = pycodestyle bin codechecker_analyzer tests
+
+diff --git a/web/tests/Makefile b/web/tests/Makefile
+index 035752a5..aae48560 100644
+--- a/web/tests/Makefile
++++ b/web/tests/Makefile
+@@ -22,7 +22,7 @@ CLEAR_WORKSPACE_CMD = rm -rf $(CC_TEST_WORKSPACE_ROOT)
+ # Nose test runner configuration options.
+ NOSECFG = --config .noserc
+
+-test: pycodestyle pylint test_unit test_functional
++test: test_unit test_functional
+
+ test_in_env: pycodestyle_in_env pylint_in_env test_unit_in_env test_functional_novenv

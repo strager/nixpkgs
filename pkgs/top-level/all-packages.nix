@@ -9436,6 +9436,8 @@ in
 
   coan = callPackage ../development/tools/analysis/coan { };
 
+  codechecker = callPackage ../development/tools/analysis/codechecker { };
+
   compile-daemon = callPackage ../development/tools/compile-daemon { };
 
   complexity = callPackage ../development/tools/misc/complexity { };
@@ -13955,6 +13957,11 @@ in
 
   thrift = callPackage ../development/libraries/thrift {
     inherit (pythonPackages) twisted;
+  };
+
+  thrift-py2 = callPackage ../development/libraries/thrift {
+    python = python2;
+    inherit (python2Packages) twisted;
   };
 
   thrift-0_10 = callPackage ../development/libraries/thrift/0.10.nix {
