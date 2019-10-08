@@ -154,7 +154,7 @@ python2Packages.buildPythonApplication rec {
     doxygen
     thrift-py2
   ];
-  buildInputs = [
+  propagatedBuildInputs = [
     # See analyzer/requirements_py/osx/requirements.txt.
     python2Packages.lxml
     python2Packages.portalocker
@@ -169,16 +169,22 @@ python2Packages.buildPythonApplication rec {
     #python2Packages.thrift
     thrift-py2
   ];
+  pythonPath = propagatedBuildInputs; # @@@ I'm pretty sure this is wrong.
 
   build = "make package";
 
   doCheck = true;
   checkInputs = [ python2Packages.nose ];
   installCheckPhase = ''
+    patchPythonScript "$PWD/build/CodeChecker/cc_bin/CodeChecker.py"
+    wrapPythonProgramsIn "$PWD/build/CodeChecker/bin" "$out $pythonPath"
     make test # @@@ tests fail. feelsbadman
   '';
 
   installPhase = ''
+    echo '@@@ env python'
+    declare | grep -i portalocker
+
     mkdir $out
     # @@@ doesn't follow standard directory structure...
     mv build/CodeChecker $out/CodeChecker
