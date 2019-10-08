@@ -177,7 +177,7 @@ python2Packages.buildPythonApplication rec {
   build = "make package";
 
   doCheck = true;
-  checkInputs = [ python2Packages.nose ];
+  checkInputs = [ python2Packages.nose scan-build ];
   installCheckPhase = ''
     buildPythonPath "$out $pythonPath"
     patchPythonScript "$PWD/build/CodeChecker/cc_bin/CodeChecker.py"
