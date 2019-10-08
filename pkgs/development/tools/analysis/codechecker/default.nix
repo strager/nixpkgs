@@ -4,7 +4,8 @@
   fetchurl,
   fetchFromGitHub,
   python2Packages,
-  thrift-py2
+  thrift-py2,
+  scan-build
 }:
 
 python2Packages.buildPythonApplication rec {
@@ -155,6 +156,8 @@ python2Packages.buildPythonApplication rec {
     thrift-py2
   ];
   propagatedBuildInputs = [
+    scan-build # @@@ rewrite internal references to scan-build to point to this copy (not $PATH)
+
     # See analyzer/requirements_py/osx/requirements.txt.
     python2Packages.lxml
     python2Packages.portalocker
@@ -176,11 +179,13 @@ python2Packages.buildPythonApplication rec {
   doCheck = true;
   checkInputs = [ python2Packages.nose ];
   installCheckPhase = ''
+    buildPythonPath "$out $pythonPath"
     patchPythonScript "$PWD/build/CodeChecker/cc_bin/CodeChecker.py"
+
     wrapPythonProgramsIn "$PWD/build/CodeChecker/bin" "$out $pythonPath"
+
     make test # @@@ tests fail. feelsbadman
   '';
-
   installPhase = ''
     echo '@@@ env python'
     declare | grep -i portalocker

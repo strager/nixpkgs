@@ -10101,6 +10101,8 @@ in
 
   sauce-connect = callPackage ../development/tools/sauce-connect { };
 
+  scan-build = callPackage ../development/tools/scan-build { };
+
   selenium-server-standalone = callPackage ../development/tools/selenium/server { };
 
   selendroid = callPackage ../development/tools/selenium/selendroid { };
