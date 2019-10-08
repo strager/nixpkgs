@@ -3817,6 +3817,8 @@ in {
 
   mockito = callPackage ../development/python-modules/mockito { };
 
+  mockldap = callPackage ../development/python-modules/mockldap { };
+
   modeled = callPackage ../development/python-modules/modeled { };
 
   moderngl = callPackage ../development/python-modules/moderngl { };

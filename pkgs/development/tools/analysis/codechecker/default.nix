@@ -177,22 +177,64 @@ python2Packages.buildPythonApplication rec {
   build = "make package";
 
   doCheck = true;
-  checkInputs = [ python2Packages.nose scan-build ];
-  installCheckPhase = ''
+  checkInputs = [
+    python2Packages.nose
+    scan-build
+
+    # See web/requirements_py/dev/requirements.txt.
+    python2Packages.alembic
+    python2Packages.lxml
+    #python2Packages.mkdocs
+    python2Packages.mockldap
+    python2Packages.nose
+    #python2Packages.pg8000
+    python2Packages.portalocker
+    python2Packages.psutil
+    #python2Packages.psycopg2-binary
+    python2Packages.pycodestyle
+    #python2Packages.pylint
+    python2Packages.sqlalchemy
+    #python2Packages.thrift
+    thrift-py2
+  ];
+  installCheckPhase = '' # @@@ rename to checkPhase.
     buildPythonPath "$out $pythonPath"
+    # @@@ do this in post-install instead.
     patchPythonScript "$PWD/build/CodeChecker/cc_bin/CodeChecker.py"
 
+    # @@@ do this in post-install instead.
     wrapPythonProgramsIn "$PWD/build/CodeChecker/bin" "$out $pythonPath"
 
-    make test # @@@ tests fail. feelsbadman
+    # @@@
+    mkdir tmp-clang-wrapper
+    cat >tmp-clang-wrapper/clang <<'EOF'
+#!/bin/sh
+if [ "$1" = -cc1 ]; then
+    exec /nix/store/nly8g8897vla6x4bhms7kfnc921w849l-clang-7.1.0/bin/clang "$@"
+else
+    exec /nix/store/nl1px9pl8j9kvjd8q12hdfdi02jqlaai-clang-wrapper-7.1.0/bin/clang "$@"
+fi
+EOF
+    chmod +x tmp-clang-wrapper/clang
+    cat >tmp-clang-wrapper/clang++ <<'EOF'
+#!/bin/sh
+if [ "$1" = -cc1 ]; then
+    exec /nix/store/nly8g8897vla6x4bhms7kfnc921w849l-clang-7.1.0/bin/clang++ "$@"
+else
+    exec /nix/store/nl1px9pl8j9kvjd8q12hdfdi02jqlaai-clang-wrapper-7.1.0/bin/clang++ "$@"
+fi
+EOF
+    chmod +x tmp-clang-wrapper/clang++
+    ln -s clang tmp-clang-wrapper/gcc
+    ln -s clang++ tmp-clang-wrapper/g++
+    PATH="$PWD/tmp-clang-wrapper:$PATH"
+
+    make test
   '';
   installPhase = ''
-    echo '@@@ env python'
-    declare | grep -i portalocker
-
     mkdir $out
     # @@@ doesn't follow standard directory structure...
-    mv build/CodeChecker $out/CodeChecker
+    cp -a build/CodeChecker $out/CodeChecker
   '';
 
   meta = with stdenv.lib; {
