@@ -6682,6 +6682,8 @@ in
     libX11 = xorg.libX11;
   };
 
+  twitch-chat-downloader = callPackage ../tools/networking/twitch-chat-downloader { };
+
   twitterBootstrap = callPackage ../development/web/twitter-bootstrap {};
 
   txr = callPackage ../tools/misc/txr { stdenv = clangStdenv; };
