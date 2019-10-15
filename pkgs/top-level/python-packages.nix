@@ -1170,7 +1170,11 @@ in {
 
   rq = callPackage ../development/python-modules/rq { };
 
-  rx = callPackage ../development/python-modules/rx { };
+  rx = self.rx_1_6;
+
+  rx_1_6 = callPackage ../development/python-modules/rx/1.6.nix { };
+
+  rx_3_0 = disabledIf (! pythonAtLeast "3.6") (callPackage ../development/python-modules/rx/3.0.nix { });
 
   sabyenc = callPackage ../development/python-modules/sabyenc { };
 
