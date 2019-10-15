@@ -1,5 +1,5 @@
 { lib
-, buildPythonApplication
+, buildPythonPackage
 , flake8
 , invoke
 , parver
@@ -10,7 +10,7 @@
 , virtualenv-clone
 }:
 
-buildPythonApplication rec {
+buildPythonPackage rec {
   pname = "pipenv";
   version = "2018.11.26";
 

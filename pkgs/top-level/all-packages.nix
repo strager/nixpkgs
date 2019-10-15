@@ -8987,7 +8987,7 @@ in
 
   pew = callPackage ../development/tools/pew {};
   poetry = with python3Packages; toPythonApplication poetry;
-  pipenv = python3Packages.callPackage ../development/tools/pipenv {};
+  pipenv = with python3Packages; toPythonApplication pipenv;
 
   pipewire = callPackage ../development/libraries/pipewire {};
 

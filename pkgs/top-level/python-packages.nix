@@ -4237,6 +4237,8 @@ in {
 
   pipdate = callPackage ../development/python-modules/pipdate { };
 
+  pipenv = callPackage ../development/python-modules/pipenv { };
+
   pika = callPackage ../development/python-modules/pika { };
 
   pika-pool = callPackage ../development/python-modules/pika-pool { };
