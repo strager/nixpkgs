@@ -207,26 +207,28 @@ python2Packages.buildPythonApplication rec {
 
     # @@@
     mkdir tmp-clang-wrapper
-    cat >tmp-clang-wrapper/clang <<'EOF'
-#!/bin/sh
-if [ "$1" = -cc1 ]; then
-    exec /nix/store/nly8g8897vla6x4bhms7kfnc921w849l-clang-7.1.0/bin/clang "$@"
-else
-    exec /nix/store/nl1px9pl8j9kvjd8q12hdfdi02jqlaai-clang-wrapper-7.1.0/bin/clang "$@"
-fi
-EOF
-    chmod +x tmp-clang-wrapper/clang
-    cat >tmp-clang-wrapper/clang++ <<'EOF'
-#!/bin/sh
-if [ "$1" = -cc1 ]; then
-    exec /nix/store/nly8g8897vla6x4bhms7kfnc921w849l-clang-7.1.0/bin/clang++ "$@"
-else
-    exec /nix/store/nl1px9pl8j9kvjd8q12hdfdi02jqlaai-clang-wrapper-7.1.0/bin/clang++ "$@"
-fi
-EOF
-    chmod +x tmp-clang-wrapper/clang++
-    ln -s clang tmp-clang-wrapper/gcc
-    ln -s clang++ tmp-clang-wrapper/g++
+#    cat >tmp-clang-wrapper/clang <<'EOF'
+##!/bin/sh
+#if [ "$1" = -cc1 ]; then
+#    exec /nix/store/nly8g8897vla6x4bhms7kfnc921w849l-clang-7.1.0/bin/clang "$@"
+#else
+#    exec /nix/store/nl1px9pl8j9kvjd8q12hdfdi02jqlaai-clang-wrapper-7.1.0/bin/clang "$@"
+#fi
+#EOF
+#    chmod +x tmp-clang-wrapper/clang
+#    cat >tmp-clang-wrapper/clang++ <<'EOF'
+##!/bin/sh
+#if [ "$1" = -cc1 ]; then
+#    exec /nix/store/nly8g8897vla6x4bhms7kfnc921w849l-clang-7.1.0/bin/clang++ "$@"
+#else
+#    exec /nix/store/nl1px9pl8j9kvjd8q12hdfdi02jqlaai-clang-wrapper-7.1.0/bin/clang++ "$@"
+#fi
+#EOF
+#    chmod +x tmp-clang-wrapper/clang++
+    # @@@ fix tests to use clang explicitly? add gcc to
+    # checkInputs?
+    ln -s $(command -v clang) tmp-clang-wrapper/gcc
+    ln -s $(command -v clang++) tmp-clang-wrapper/g++
     PATH="$PWD/tmp-clang-wrapper:$PATH"
 
     make test

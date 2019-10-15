@@ -24,17 +24,17 @@ python3Packages.buildPythonApplication rec {
     set -x
 
     # @@@
-    mkdir tmp-clang-wrapper
-    cat >tmp-clang-wrapper/clang <<'EOF'
-#!/bin/sh
-if [ "$1" = -cc1 ]; then
-    exec /nix/store/nly8g8897vla6x4bhms7kfnc921w849l-clang-7.1.0/bin/clang "$@"
-else
-    exec /nix/store/nl1px9pl8j9kvjd8q12hdfdi02jqlaai-clang-wrapper-7.1.0/bin/clang "$@"
-fi
-EOF
-    chmod +x tmp-clang-wrapper/clang
-    PATH="$PWD/tmp-clang-wrapper:$PATH"
+#    mkdir tmp-clang-wrapper
+#    cat >tmp-clang-wrapper/clang <<'EOF'
+##!/bin/sh
+#if [ "$1" = -cc1 ]; then
+#    exec /nix/store/nly8g8897vla6x4bhms7kfnc921w849l-clang-7.1.0/bin/clang "$@"
+#else
+#    exec /nix/store/nl1px9pl8j9kvjd8q12hdfdi02jqlaai-clang-wrapper-7.1.0/bin/clang "$@"
+#fi
+#EOF
+#    chmod +x tmp-clang-wrapper/clang
+#    PATH="$PWD/tmp-clang-wrapper:$PATH"
 
     wrapPythonProgramsIn "$PWD/tests/functional/bin" "$out $pythonPath"
 
