@@ -9,11 +9,13 @@ stdenv.mkDerivation rec {
     sha256 = "1fxq57xy1ajzfdnvv5zfm7ap2nf49znw5f9gbi4kb9vds942ij27";
   };
 
-  buildInputs = [ ocaml findlib ocamlbuild topkg js_of_ocaml ];
+  buildInputs = [ ocaml findlib ocamlbuild topkg
+  #js_of_ocaml
+  ];
 
   propagatedBuildInputs = [ result ];
 
-  buildPhase = "${topkg.run} build --with-js_of_ocaml true";
+  buildPhase = "${topkg.run} build --with-js_of_ocaml false";
 
   inherit (topkg) installPhase;
 

@@ -800,7 +800,7 @@ in
   codespell = with python3Packages; toPythonApplication codespell;
 
   comby = callPackage ../development/tools/comby {
-    ocamlPackages = ocaml-ng.ocamlPackages_4_08;
+    ocamlPackages = ocaml-ng.ocamlPackages_4_09;
   };
 
   cozy = callPackage ../applications/audio/cozy-audiobooks { };

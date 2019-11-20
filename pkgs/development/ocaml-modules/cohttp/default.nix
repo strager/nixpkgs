@@ -15,9 +15,9 @@ buildDunePackage rec {
 		sha256 = "11lz9h7nbm204zxdyvdz0qbvnlycvyxnxg4yfy84hw4w1j0zg0qp";
 	};
 
-	buildInputs = [ jsonm ppx_fields_conv ppx_sexp_conv stdlib-shims ];
+	buildInputs = [ jsonm ppx_fields_conv ppx_sexp_conv ];
 
-	propagatedBuildInputs = [ base64 fieldslib re stringext uri-sexp ];
+	propagatedBuildInputs = [ base64 fieldslib re stdlib-shims stringext uri-sexp ];
 
 	meta = {
 		description = "HTTP(S) library for Lwt, Async and Mirage";
