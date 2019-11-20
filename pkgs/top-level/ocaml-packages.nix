@@ -326,6 +326,8 @@ let
 
     gtktop = callPackage ../development/ocaml-modules/gtktop { };
 
+    hack_parallel = callPackage ../development/ocaml-modules/hack_parallel { };
+
     hex = callPackage ../development/ocaml-modules/hex { };
 
     httpaf = callPackage ../development/ocaml-modules/httpaf { };
@@ -463,6 +465,8 @@ let
     mmap =  callPackage ../development/ocaml-modules/mmap { };
 
     mparser =  callPackage ../development/ocaml-modules/mparser { };
+
+    mparser-comby = callPackage ../development/ocaml-modules/mparser/comby.nix { };
 
     mstruct =  callPackage ../development/ocaml-modules/mstruct { };
 

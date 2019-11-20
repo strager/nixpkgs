@@ -799,6 +799,10 @@ in
 
   codespell = with python3Packages; toPythonApplication codespell;
 
+  comby = callPackage ../development/tools/comby {
+    ocamlPackages = ocaml-ng.ocamlPackages_4_08;
+  };
+
   cozy = callPackage ../applications/audio/cozy-audiobooks { };
 
   ctrtool = callPackage ../tools/archivers/ctrtool { };
