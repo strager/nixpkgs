@@ -1,6 +1,7 @@
 { janePackage
 , ctypes
 , num
+, ocaml_pcre
 , octavius
 , ppxlib
 , re
@@ -393,10 +394,9 @@ rec {
     propagatedBuildInputs = [
       core
       core_extended
-      #dune
       expect_test_helpers
       patience_diff
-      #pcre
+      ocaml_pcre
       ppx_jane
       re
       sexplib

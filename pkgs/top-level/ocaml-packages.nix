@@ -845,7 +845,7 @@ let
     janeStreet =
     if lib.versionOlder "4.07" ocaml.version
     then import ../development/ocaml-modules/janestreet/0.12.nix {
-      inherit ctypes janePackage num octavius ppxlib re;
+      inherit ctypes janePackage num ocaml_pcre octavius ppxlib re;
       inherit (pkgs) openssl;
     }
     else import ../development/ocaml-modules/janestreet {
