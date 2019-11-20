@@ -16,19 +16,19 @@ ocamlPackages.buildDunePackage rec {
   patches = [ ./ppx-conditional.patch ];
 
   buildInputs = with ocamlPackages; [
+    #lambda-term
+    #lwt
     angstrom
     bisect_ppx
     camlzip
     core
     hack_parallel
-    #lambda-term
-    #lwt
     lwt_react
     mparser-comby
     ocaml_oasis
+    ocaml_pcre
     opium
     patdiff
-    ocaml_pcre
     ppx_deriving
     ppx_deriving_yojson
     ppx_tools_versioned

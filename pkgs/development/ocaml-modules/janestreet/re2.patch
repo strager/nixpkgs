@@ -1,8 +1,8 @@
 diff --git a/src/dune b/src/dune
-index 307b2bb..f7784cf 100644
+index d91dc8e..b533f1d 100644
 --- a/src/dune
 +++ b/src/dune
-@@ -1,7 +1,7 @@
+@@ -1,9 +1,9 @@
  (library (name re2) (public_name re2)
   (libraries core_kernel re2_c core_kernel.rope)
   (c_library_flags :standard -lstdc++ -lpthread) (cxx_names stubs)
@@ -10,11 +10,8 @@ index 307b2bb..f7784cf 100644
 + (cxx_flags (:standard \ -pedantic) (-I re2_c/libre2) (-x c++))
   (preprocess (pps ppx_jane -check-doc-comments)))
  
- (alias (name runtest) (deps (:first_dep options.ml) options.cinaps)
-@@ -15,4 +15,4 @@
- 
  (rule (targets explicit_dependencies.ml explicit_dependencies.mli)
-  (deps %{workspace_root}/bin/gen-explicit-dependencies.sh)
+  (mode fallback) (deps %{workspace_root}/bin/gen-explicit-dependencies.sh)
 - (action (bash "%{deps} re2_c")))
 \ No newline at end of file
 + (action (bash "%{deps} re2_c")))
