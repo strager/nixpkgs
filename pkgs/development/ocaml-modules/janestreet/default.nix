@@ -420,6 +420,14 @@ rec {
     meta.description = "Async wrappers for SSL";
   };
 
+  # @@@ this isn't used.
+  patdiff = janePackage {
+    pname = "patdiff";
+    hash = "1ayq23s5igd8cf3n4qxprjvhbmb6ighb3fy5mw7hxl0mdgsw5fvz";
+    propagatedBuildInputs = [ ];
+    meta.description = "@@@";
+  };
+
   sexp_pretty = janePackage {
     pname = "sexp_pretty";
     hash = "0xskahjggbwvvb82fn0jp1didxbgpmgks76xhwp9s3vqkhgz6918";

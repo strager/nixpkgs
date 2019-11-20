@@ -13,6 +13,8 @@ ocamlPackages.buildDunePackage rec {
     sha256 = "01kc07zp2xbzbzcmx7znvywg6bcr69sl5nia5bmadlmmbp9yhyiw";
   };
 
+  patches = [ ./ppx-conditional.patch ];
+
   buildInputs = with ocamlPackages; [
     angstrom
     bisect_ppx
@@ -23,10 +25,10 @@ ocamlPackages.buildDunePackage rec {
     #lwt
     lwt_react
     mparser-comby
-    #oasis
+    ocaml_oasis
     opium
-    #patdiff
-    #pcre
+    patdiff
+    ocaml_pcre
     ppx_deriving
     ppx_deriving_yojson
     ppx_tools_versioned

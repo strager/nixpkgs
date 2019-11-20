@@ -1,0 +1,44 @@
+diff --git a/src/dune b/src/dune
+index 307b2bb..f7784cf 100644
+--- a/src/dune
++++ b/src/dune
+@@ -1,7 +1,7 @@
+ (library (name re2) (public_name re2)
+  (libraries core_kernel re2_c core_kernel.rope)
+  (c_library_flags :standard -lstdc++ -lpthread) (cxx_names stubs)
+- (cxx_flags (:standard \ -pedantic) (-I re2_c/libre2))
++ (cxx_flags (:standard \ -pedantic) (-I re2_c/libre2) (-x c++))
+  (preprocess (pps ppx_jane -check-doc-comments)))
+ 
+ (alias (name runtest) (deps (:first_dep options.ml) options.cinaps)
+@@ -15,4 +15,4 @@
+ 
+ (rule (targets explicit_dependencies.ml explicit_dependencies.mli)
+  (deps %{workspace_root}/bin/gen-explicit-dependencies.sh)
+- (action (bash "%{deps} re2_c")))
+\ No newline at end of file
++ (action (bash "%{deps} re2_c")))
+diff --git a/src/re2_c/dune b/src/re2_c/dune
+index cff97ed..8492d61 100644
+--- a/src/re2_c/dune
++++ b/src/re2_c/dune
+@@ -9,12 +9,6 @@
+     "\
+    \nARFLAGS=rsc\
+    \nCXXFLAGS=\"-Wall -O3 -g -pthread\"\
+-   \nif [ FreeBSD = `uname -s` ]; then\
+-   \n       CXX=clang++\
+-   \n       CXXFLAGS=\"$CXXFLAGS -I /usr/local/lib/re2\"\
+-   \nelse\
+-   \n       CXX=g++\
+-   \nfi\
+    \nif ! %{arch_sixtyfour}; then\
+    \n  CXX=\"$CXX -m32\"\
+    \nfi\
+@@ -23,4 +17,4 @@
+    \ncp libre2/obj/libre2.a libre2_c_stubs.a\
+    \ncp libre2/obj/so/libre2.so dllre2_c_stubs.so\
+    \n%{make} -s -C libre2 clean\
+-   \n")))
+\ No newline at end of file
++   \n")))

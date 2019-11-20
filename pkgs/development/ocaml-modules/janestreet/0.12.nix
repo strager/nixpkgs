@@ -386,6 +386,24 @@ rec {
     propagatedBuildInputs = [ async ctypes openssl ];
   };
 
+  patdiff = janePackage {
+    pname = "patdiff";
+    hash = "04krzn6rj2r81z55pms5ayk6bxhlxrm006cbhy0m6rc69a0h00lh";
+    meta.description = "@@@";
+    propagatedBuildInputs = [
+      core
+      core_extended
+      #dune
+      expect_test_helpers
+      patience_diff
+      #pcre
+      ppx_jane
+      re
+      sexplib
+      shell
+    ];
+  };
+
   async_find = janePackage {
     pname = "async_find";
     hash = "0qsz9f15s5rlk6za10s810v6nlkdxg2g9p1827lcpa7nhjcpi673";
@@ -394,6 +412,7 @@ rec {
   };
 
   re2 = janePackage {
+    patches = [ ./re2.patch ];
     pname = "re2";
     hash = "1sw32lb0y501y971ij7287796lvfhs0nfgla895r74ymfks2rcjb";
     meta.description = "OCaml bindings for RE2, Google's regular expression library";

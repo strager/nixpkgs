@@ -533,6 +533,8 @@ let
 
     ocaml_optcomp = callPackage ../development/ocaml-modules/optcomp { };
 
+    #patdiff = callPackage ../development/ocaml-modules/patdiff {}; # @@@
+
     ocaml_pcre = callPackage ../development/ocaml-modules/pcre {};
 
     pgocaml = callPackage ../development/ocaml-modules/pgocaml {};
@@ -1094,6 +1096,11 @@ let
       if lib.versionOlder "4.03" ocaml.version
       then janeStreet.async_ssl
       else callPackage ../development/ocaml-modules/janestreet/async_ssl.nix { };
+
+    patdiff =
+      if lib.versionOlder "4.03" ocaml.version
+      then janeStreet.patdiff
+      else callPackage ../development/ocaml-modules/janestreet/yyyyy.nix { };
 
     # Apps / from all-packages
 

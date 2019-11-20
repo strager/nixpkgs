@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, ocaml_oasis, ocaml, findlib, ocamlbuild }:
+{ stdenv, fetchFromGitHub, ocaml_oasis, ocaml, findlib, ocamlbuild, ocaml_pcre }:
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-mparser-comby-1.2.3";
@@ -9,9 +9,9 @@ stdenv.mkDerivation {
     sha256 = "1h09x5xw70wl0jiwyga7dbwl9bh4ai7dn91z9zyzyn5aqw3cgr62";
   };
 
-  buildInputs = [ ocaml_oasis ocaml findlib ocamlbuild ];
+  buildInputs = [ ocaml_oasis ocaml findlib ocamlbuild ocaml_pcre ];
 
-  configurePhase = "oasis && ocaml setup.ml -configure";
+  configurePhase = "oasis setup && ocaml setup.ml -configure --enable-pcre";
   buildPhase = "ocaml setup.ml -build";
   installPhase = "ocaml setup.ml -install";
 
