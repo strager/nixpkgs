@@ -27,7 +27,6 @@ ocamlPackages.buildDunePackage rec {
     core
     hack_parallel
     janeStreet.shell
-    lambdaTerm # @@@ is this really necessary?
     lwt_react
     mparser-comby
     ocaml_lwt
