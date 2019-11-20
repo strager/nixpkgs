@@ -1,0 +1,123 @@
+diff --git a/lib/configuration/dune b/lib/configuration/dune
+index 8b528e5..bce38df 100644
+--- a/lib/configuration/dune
++++ b/lib/configuration/dune
+@@ -1,5 +1,5 @@
+ (library
+   (name configuration)
+   (public_name comby.configuration)
+-  (preprocess (pps ppx_deriving.show ppx_sexp_conv ppx_sexp_message ppx_deriving_yojson bisect_ppx --conditional))
++  (preprocess (pps ppx_deriving.show ppx_sexp_conv ppx_sexp_message ppx_deriving_yojson bisect_ppx -conditional))
+   (libraries camlzip comby.statistics comby.parsers comby.match comby.language ppxlib core core.uuid mparser mparser.pcre yojson ppx_deriving_yojson hack_parallel))
+diff --git a/lib/dune b/lib/dune
+index b89a748..8dacedb 100644
+--- a/lib/dune
++++ b/lib/dune
+@@ -1,7 +1,7 @@
+ (library
+   (name comby)
+   (public_name comby)
+-  (preprocess (pps ppx_deriving.show ppx_deriving.eq ppx_sexp_conv bisect_ppx --conditional))
++  (preprocess (pps ppx_deriving.show ppx_deriving.eq ppx_sexp_conv bisect_ppx -conditional))
+   (libraries 
+    ppxlib 
+    core 
+diff --git a/lib/language/dune b/lib/language/dune
+index c58ab70..2b094f3 100644
+--- a/lib/language/dune
++++ b/lib/language/dune
+@@ -1,5 +1,5 @@
+ (library
+   (name language)
+   (public_name comby.language)
+-  (preprocess (pps ppx_sexp_conv bisect_ppx --conditional))
++  (preprocess (pps ppx_sexp_conv bisect_ppx -conditional))
+   (libraries comby.parsers comby.match comby.rewriter ppxlib core core.uuid))
+diff --git a/lib/match/dune b/lib/match/dune
+index 63c180e..e541f8f 100644
+--- a/lib/match/dune
++++ b/lib/match/dune
+@@ -1,5 +1,5 @@
+ (library
+   (name match)
+   (public_name comby.match)
+-  (preprocess (pps ppx_deriving.eq ppx_sexp_conv ppx_deriving_yojson bisect_ppx --conditional))
++  (preprocess (pps ppx_deriving.eq ppx_sexp_conv ppx_deriving_yojson bisect_ppx -conditional))
+   (libraries comby.parsers ppxlib core yojson ppx_deriving_yojson ppx_deriving_yojson.runtime))
+diff --git a/lib/matchers/dune b/lib/matchers/dune
+index 726006c..0df6e89 100644
+--- a/lib/matchers/dune
++++ b/lib/matchers/dune
+@@ -1,5 +1,5 @@
+ (library
+   (name matchers)
+   (public_name comby.matchers)
+-  (preprocess (pps ppx_sexp_conv ppx_sexp_message ppx_deriving_yojson bisect_ppx --conditional))
++  (preprocess (pps ppx_sexp_conv ppx_sexp_message ppx_deriving_yojson bisect_ppx -conditional))
+   (libraries comby.parsers comby.match ppxlib core core.uuid mparser mparser.pcre yojson ppx_deriving_yojson))
+diff --git a/lib/parsers/dune b/lib/parsers/dune
+index 6c67014..0de7de4 100644
+--- a/lib/parsers/dune
++++ b/lib/parsers/dune
+@@ -1,5 +1,5 @@
+ (library
+   (name parsers)
+   (public_name comby.parsers)
+-  (preprocess (pps ppx_sexp_conv bisect_ppx --conditional))
++  (preprocess (pps ppx_sexp_conv bisect_ppx -conditional))
+   (libraries ppxlib core mparser mparser.pcre))
+diff --git a/lib/pipeline/dune b/lib/pipeline/dune
+index b41feec..2934148 100644
+--- a/lib/pipeline/dune
++++ b/lib/pipeline/dune
+@@ -1,5 +1,5 @@
+ (library
+   (name pipeline)
+   (public_name comby.pipeline)
+-  (preprocess (pps ppx_sexp_conv ppx_deriving_yojson bisect_ppx --conditional))
++  (preprocess (pps ppx_sexp_conv ppx_deriving_yojson bisect_ppx -conditional))
+   (libraries comby.interactive comby.statistics comby.parsers comby.match comby.language camlzip ppxlib core yojson ppx_deriving_yojson hack_parallel))
+diff --git a/lib/replacement/dune b/lib/replacement/dune
+index 6c40c68..f8547ec 100644
+--- a/lib/replacement/dune
++++ b/lib/replacement/dune
+@@ -1,5 +1,5 @@
+ (library
+   (name replacement)
+   (public_name comby.replacement)
+-  (preprocess (pps ppx_deriving_yojson bisect_ppx --conditional))
++  (preprocess (pps ppx_deriving_yojson bisect_ppx -conditional))
+   (libraries comby.match ppxlib core yojson ppx_deriving_yojson ppx_deriving_yojson.runtime patdiff.lib))
+diff --git a/lib/rewriter/dune b/lib/rewriter/dune
+index 2573fff..8db570d 100644
+--- a/lib/rewriter/dune
++++ b/lib/rewriter/dune
+@@ -1,5 +1,5 @@
+ (library
+   (name rewriter)
+   (public_name comby.rewriter)
+-  (preprocess (pps ppx_deriving_yojson bisect_ppx --conditional))
++  (preprocess (pps ppx_deriving_yojson bisect_ppx -conditional))
+   (libraries comby.matchers comby.replacement ppxlib core core.uuid))
+diff --git a/lib/server/dune b/lib/server/dune
+index 5120a76..4a85073 100644
+--- a/lib/server/dune
++++ b/lib/server/dune
+@@ -1,5 +1,5 @@
+ (library
+   (name server_types)
+   (public_name comby.server_types)
+-  (preprocess (pps ppx_deriving.show ppx_deriving_yojson bisect_ppx --conditional))
++  (preprocess (pps ppx_deriving.show ppx_deriving_yojson bisect_ppx -conditional))
+   (libraries comby.match comby.replacement ppxlib core yojson ppx_deriving_yojson ppx_deriving_yojson.runtime))
+diff --git a/lib/statistics/dune b/lib/statistics/dune
+index 6be05c9..83f03ad 100644
+--- a/lib/statistics/dune
++++ b/lib/statistics/dune
+@@ -1,5 +1,5 @@
+ (library
+   (name statistics)
+   (public_name comby.statistics)
+-  (preprocess (pps ppx_deriving_yojson bisect_ppx --conditional))
++  (preprocess (pps ppx_deriving_yojson bisect_ppx -conditional))
+   (libraries yojson ppx_deriving_yojson ppx_deriving_yojson.runtime))

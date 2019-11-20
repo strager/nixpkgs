@@ -1,0 +1,16 @@
+commit 981d4f9e52a1fe218def54b1403d9a127fcb13f3
+Author: Matthew Glazar <strager.nds@gmail.com>
+Date:   Tue Nov 19 22:17:12 2019 -0800
+
+    Add missing dependency
+
+diff --git a/lib/interactive/dune b/lib/interactive/dune
+index 7bfd53f..d7cd8e6 100644
+--- a/lib/interactive/dune
++++ b/lib/interactive/dune
+@@ -2,4 +2,4 @@
+   (name interactive)
+   (public_name comby.interactive)
+   (preprocess (pps ppx_sexp_conv))
+-  (libraries comby.configuration comby.match ppxlib core core.uuid lwt lwt.unix))
++  (libraries comby.configuration comby.match shell.filename_extended ppxlib core core.uuid lwt lwt.unix))
