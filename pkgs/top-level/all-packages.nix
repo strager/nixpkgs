@@ -9696,6 +9696,8 @@ with pkgs;
     inherit (darwin.apple_sdk.frameworks) Security;
   };
 
+  jscpd = callPackage ../development/tools/jscpd { };
+
   jsubfinder = callPackage ../tools/security/jsubfinder { };
 
   jtag-remote-server = callPackage ../development/embedded/jtag-remote-server { };
